@@ -1,0 +1,25 @@
+[project]
+name = "network-routing-tui"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [{ name = "Javier Vela", email = "javier.vela00@gmail.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.10.7",
+    "networkx>=3.5",
+    "rich-pixels>=3.0.1",
+    "textual>=6.4.0",
+]
+
+[project.scripts]
+nrt = "network_routing_tui.__main__:main"
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.2",
+]
