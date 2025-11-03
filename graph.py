@@ -11,11 +11,18 @@ class RoutingTable():
 
     def show(self):
         res = ""
+        l = []
         for r in self.routes:
             m = self.routes[r][0]
             if r == m:
                 m = "-"
-            res += r + " " + m + " " + str(self.routes[r][1]) + "\n"
+            l.append([r,m,self.routes[r][1]])
+
+        l.sort(key=lambda route: route[2])
+
+        for e in l:
+            res += e[0] + " " + e[1] + " " + str(e[2]) + "\n"
+        
         return res[:-1]
 
     def copy(self):

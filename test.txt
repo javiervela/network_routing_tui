@@ -1,11 +1,11 @@
 A D 5
 A B 2
 A E 6
-D F 3
+D F 2
 D E 4
 F E 1
 F G 7
 B C 1
 E C 3
 G H 3
-C H 5
+C H 1
