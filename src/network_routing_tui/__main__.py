@@ -10,7 +10,6 @@ from textual.widgets import (
     Tab,
     Tabs,
 )
-from textual.reactive import reactive
 
 from network_routing_tui.graph import Graph
 
@@ -21,6 +20,10 @@ class LayoutApp(App):
     TITLE = "Network Routing"
     # TODO better subtitle
     SUB_TITLE = "Interactive Network Topology — Routing Visualization"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.graph: Graph | None = None
 
     def on_mount(self) -> None:
         self.graph = Graph()
