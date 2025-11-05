@@ -51,12 +51,29 @@ class Graph(nx.Graph):
     def draw(self, seed=7):
         pos = nx.spring_layout(self, seed=seed)
 
-        nx.draw_networkx_nodes(self, pos, node_size=700)
-        nx.draw_networkx_edges(self, pos, width=4)
-        nx.draw_networkx_labels(self, pos, font_size=20, font_family="sans-serif")
+        nx.draw_networkx_nodes(
+            self,
+            pos,
+            node_size=700,
+        )
+        nx.draw_networkx_edges(
+            self,
+            pos,
+            width=4,
+        )
+        nx.draw_networkx_labels(
+            self,
+            pos,
+            font_size=20,
+            font_family="sans-serif",
+        )
 
         edge_labels = nx.get_edge_attributes(self, "weight")
         nx.draw_networkx_edge_labels(self, pos, edge_labels, rotate=False)
+
+    def show(self):
+        self.draw()
+        plt.show()
 
     def print_table(self, n):
         print(self.nodes[n]["routable"].show())
@@ -65,6 +82,7 @@ class Graph(nx.Graph):
         return self.nodes[n]["routable"]
 
     def generate_image(self, width_px: int, height_px: int, dpi=30) -> Image.Image:
+        # TODO make this use self.draw()
         pos = nx.spring_layout(self, seed=42)
         fig_w, fig_h = width_px / dpi, height_px / dpi
         fig, ax = plt.subplots(figsize=(fig_w, fig_h), dpi=dpi)
