@@ -16,5 +16,4 @@ if __name__ == "__main__":
 
     print(G.get_routing_table("A").get_table_as_list())
 
-    G.draw(1)
-    plt.show()
+    G.show()
