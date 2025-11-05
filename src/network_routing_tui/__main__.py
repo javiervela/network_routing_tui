@@ -1,41 +1,9 @@
-import io
-import matplotlib.pyplot as plt
-from PIL import Image
-from textual.app import App, ComposeResult
-from textual.widgets import Placeholder, Header, Footer, Static, Tabs, Tab, DataTable
-from textual.containers import Horizontal, Vertical, HorizontalScroll
 from rich_pixels import Pixels
-import networkx as nx
+from textual.app import App, ComposeResult
+from textual.containers import Horizontal, Vertical, HorizontalScroll
+from textual.widgets import Placeholder, Header, Footer, Static, Tabs, Tab, DataTable
 
 from network_routing_tui.graph import Graph
-
-
-def generate_graph_image(graph: nx.Graph, width_px: int, height_px: int) -> Image.Image:
-    pos = nx.spring_layout(graph, seed=42)
-    dpi = 30
-    fig_w, fig_h = width_px / dpi, height_px / dpi
-    fig, ax = plt.subplots(figsize=(fig_w, fig_h), dpi=dpi)
-    # remove figure background and margins so there are no borders
-    fig.patch.set_facecolor("none")
-    ax.set_axis_off()
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-
-    nx.draw(
-        graph,
-        pos=pos,
-        ax=ax,
-        node_color="skyblue",
-        node_size=600,
-        edge_color="gray",
-        with_labels=True,
-        font_size=20,
-    )
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png", transparent=True, bbox_inches="tight", pad_inches=0)
-    # plt.show() # TODO include this
-    plt.close(fig)
-    buf.seek(0)
-    return Image.open(buf).convert("RGBA")
 
 
 ROUTING_TABLES = {
@@ -194,8 +162,8 @@ class LayoutApp(App):
 
             with Vertical(id="right_pane"):
                 term_width, term_height = self.app.size
-                graph_image = generate_graph_image(
-                    self.graph, int(term_width / 1.5), int(term_height * 1.6)
+                graph_image = self.graph.generate_image(
+                    int(term_width / 1.5), int(term_height * 1.6)
                 )
                 yield Static(
                     Pixels.from_image(graph_image),

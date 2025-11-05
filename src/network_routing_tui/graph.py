@@ -1,4 +1,9 @@
+import io
+
+from PIL import Image
+import matplotlib.pyplot as plt
 import networkx as nx
+
 from network_routing_tui import error
 from network_routing_tui.routing_table import RoutingTable
 
@@ -55,3 +60,34 @@ class Graph(nx.Graph):
 
     def print_table(self, n):
         print(self.nodes[n]["routable"].show())
+
+    def get_routing_table(self, n):
+        return self.nodes[n]["routable"]
+
+    def generate_image(self, width_px: int, height_px: int, dpi=30) -> Image.Image:
+        pos = nx.spring_layout(self, seed=42)
+        fig_w, fig_h = width_px / dpi, height_px / dpi
+        fig, ax = plt.subplots(figsize=(fig_w, fig_h), dpi=dpi)
+        fig.patch.set_facecolor("none")
+        ax.set_axis_off()
+        plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+        nx.draw(
+            self,
+            pos=pos,
+            ax=ax,
+            node_color="skyblue",
+            node_size=600,
+            edge_color="gray",
+            with_labels=True,
+            font_size=20,
+        )
+
+        buf = io.BytesIO()
+        fig.savefig(
+            buf, format="png", transparent=True, bbox_inches="tight", pad_inches=0
+        )
+        plt.close(fig)
+        buf.seek(0)
+        img = Image.open(buf).convert("RGBA")
+        return img
