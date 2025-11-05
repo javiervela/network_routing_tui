@@ -112,40 +112,10 @@ class LayoutApp(App):
         super().__init__(**kwargs)
         self.graph = Graph()
 
-        self.graph.add_nodes_from(
-            [
-                "A",
-                "B",
-                "C",
-                "D",
-                "E",
-                "F",
-                "G",
-            ]
-        )
-        self.graph.add_edges_from(
-            [
-                ("A", "B"),
-                ("A", "C"),
-                ("A", "D"),
-                ("A", "E"),
-                ("A", "F"),
-                ("A", "G"),
-                ("F", "G"),
-                ("E", "G"),
-                ("E", "F"),
-            ]
-        )
-
-        # self.graph.load_file("graph.txt")
-        # self.graph.save_file("test.txt")
-        # for i in range(5):
-        #     print("-------")
-        #     self.graph.distance_vector()
-        #     self.graph.print_table("A")
-
-        # self.graph.draw(1)
-        # plt.show()
+        # TODO just for test
+        self.graph.load_file("./tests/graph.txt")
+        for _ in range(5):
+            self.graph.distance_vector()
 
     def compose(self) -> ComposeResult:
         yield Header(id="Header")
@@ -182,10 +152,14 @@ class LayoutApp(App):
         """Handle TabActivated message sent by Tabs."""
         node = event.tab.id
         print(f"Activated tab: {node}")
-        routing_table = ROUTING_TABLES.get(node, [])
+        routing_table = self.graph.get_routing_table(node).get_table_as_list()
+
         table = self.query_one(DataTable)
         if not table.columns:
-            table.add_columns(*routing_table[0])
+            table.add_columns(
+                "Destination", "Via/Next-Hop", "Cost"
+            )  # TODO make constants
+
         table.clear()
         table.add_rows(routing_table[1:])
         table.zebra_stripes = True

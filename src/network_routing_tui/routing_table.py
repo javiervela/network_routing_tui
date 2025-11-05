@@ -50,3 +50,9 @@ class RoutingTable:
             else:
                 seq = routable.get_seq(dest)
             self.add_route(dest, w + d, seq)
+
+    def get_table_as_list(self):
+        return [
+            (node, next_hop[0], str(next_hop[1]))
+            for node, next_hop in self.routes.items()
+        ]
