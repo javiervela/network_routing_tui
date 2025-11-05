@@ -7,31 +7,7 @@ from textual.containers import Horizontal, Vertical, HorizontalScroll
 from rich_pixels import Pixels
 import networkx as nx
 
-G = nx.Graph()
-G.add_nodes_from(
-    [
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-    ]
-)
-G.add_edges_from(
-    [
-        ("A", "B"),
-        ("A", "C"),
-        ("A", "D"),
-        ("A", "E"),
-        ("A", "F"),
-        ("A", "G"),
-        ("F", "G"),
-        ("E", "G"),
-        ("E", "F"),
-    ]
-)
+from network_routing_tui.graph import Graph
 
 
 def generate_graph_image(graph: nx.Graph, width_px: int, height_px: int) -> Image.Image:
@@ -164,6 +140,45 @@ class LayoutApp(App):
         "Interactive Network Topology — Routing Visualization"  # TODO make better
     )
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.graph = Graph()
+
+        self.graph.add_nodes_from(
+            [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+            ]
+        )
+        self.graph.add_edges_from(
+            [
+                ("A", "B"),
+                ("A", "C"),
+                ("A", "D"),
+                ("A", "E"),
+                ("A", "F"),
+                ("A", "G"),
+                ("F", "G"),
+                ("E", "G"),
+                ("E", "F"),
+            ]
+        )
+
+        # self.graph.load_file("graph.txt")
+        # self.graph.save_file("test.txt")
+        # for i in range(5):
+        #     print("-------")
+        #     self.graph.distance_vector()
+        #     self.graph.print_table("A")
+
+        # self.graph.draw(1)
+        # plt.show()
+
     def compose(self) -> ComposeResult:
         yield Header(id="Header")
 
@@ -171,10 +186,8 @@ class LayoutApp(App):
             with Vertical(id="left_pane"):
                 yield Static("Routing Tables", id="routing_tables_title")
 
-                tabs = [Tab(name, id=name) for name in G.nodes]
-                # Make tabs horizontally scrollable when they don't fit
-
                 with HorizontalScroll():
+                    tabs = [Tab(name, id=name) for name in self.graph.nodes]
                     yield Tabs(*tabs, name="Nodes", id="node_tabs", classes="node_tabs")
 
                 yield DataTable(id="routing_table", classes="routing_table_pane")
@@ -182,13 +195,14 @@ class LayoutApp(App):
             with Vertical(id="right_pane"):
                 term_width, term_height = self.app.size
                 graph_image = generate_graph_image(
-                    G, int(term_width / 1.5), int(term_height * 1.6)
+                    self.graph, int(term_width / 1.5), int(term_height * 1.6)
                 )
                 yield Static(
                     Pixels.from_image(graph_image),
                     id="graph_view_pane",
                     classes="graph_view_pane",
                 )
+
                 with Horizontal():
                     yield Placeholder(id="button_SHOW", classes="button")
                     yield Placeholder(id="button_EXPORT", classes="button")
@@ -210,8 +224,6 @@ class LayoutApp(App):
 
 
 def main():
-    # TwoPaneApp().run()
-
     app = LayoutApp()
     app.run()
 
