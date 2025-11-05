@@ -6,28 +6,6 @@ from textual.widgets import Placeholder, Header, Footer, Static, Tabs, Tab, Data
 from network_routing_tui.graph import Graph
 
 
-ROUTING_TABLES = {
-    "A": [
-        ["Destination", "Via/Next-Hop", "Cost"],
-        ("A", "B", "1"),
-        ("A", "C", "2"),
-        ("A", "D", "3"),
-        ("A", "E", "4"),
-        ("A", "F", "5"),
-        ("A", "G", "6"),
-    ],
-    "B": [
-        ["Destination", "Via/Next-Hop", "Cost"],
-        ("B", "A", "1"),
-        ("C", "A", "2"),
-        ("D", "A", "3"),
-        ("E", "A", "4"),
-        ("F", "A", "5"),
-        ("G", "A", "6"),
-    ],
-}
-
-
 class LayoutApp(App):
     CSS = """
     Screen {
