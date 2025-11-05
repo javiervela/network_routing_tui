@@ -76,9 +76,11 @@ class Graph(nx.Graph):
         plt.show()
 
     def print_table(self, n):
-        print(self.nodes[n]["routable"].show())
+        print(self.get_routing_table(n).show())
 
     def get_routing_table(self, n):
+        if not self.has_node(n):
+            return None
         return self.nodes[n]["routable"]
 
     def generate_image(self, width_px: int, height_px: int, dpi=30) -> Image.Image:
