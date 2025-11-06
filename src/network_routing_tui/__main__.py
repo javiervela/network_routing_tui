@@ -74,6 +74,35 @@ class LayoutApp(App):
 
         self.previous_tab_ids = current_tab_ids
 
+    def _update_table_for_node(self, node):
+        table = self.query_one(DataTable)
+        if not table.columns:
+            # TODO make constants
+            table.add_columns("Destination", "Via/Next-Hop", "Cost")
+
+        table.clear()
+        table.zebra_stripes = True
+        if not node:
+            return
+        routing_table = self._get_routing_table(node)
+        if routing_table:
+            table.add_rows(routing_table)
+
+    def _refresh_graph(self):
+        # Update graph image
+        graph_widget = self.query_one("#graph_view_pane", Static)
+        graph_widget.update(self._get_graph_image(self.app.size))
+
+        # Update node tabs
+        tabs = self.query_one("#node_tabs", Tabs)
+        self._update_tabs()
+
+        # Update routing table
+        node = tabs.active_tab.id if tabs.active_tab else None
+        self._update_table_for_node(node)
+
+        # TODO maybe other components
+
     def _execute_command(self, cmd: str) -> None:
         # Edge add/update: "X Y cost"  (cost is integer)
         m = re.fullmatch(r"([A-Z])\s+([A-Z])\s+(\d+)", cmd)
@@ -168,40 +197,11 @@ class LayoutApp(App):
 
         yield Footer(id="Footer")
 
-    def _update_table_for_node(self, node):
-        table = self.query_one(DataTable)
-        if not table.columns:
-            # TODO make constants
-            table.add_columns("Destination", "Via/Next-Hop", "Cost")
-
-        table.clear()
-        table.zebra_stripes = True
-        if not node:
-            return
-        routing_table = self._get_routing_table(node)
-        if routing_table:
-            table.add_rows(routing_table)
-
     def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
         """Handle TabActivated message sent by Tabs."""
 
         node = event.tab.id
         self._update_table_for_node(node)
-
-    def _refresh_graph(self):
-        # Update graph image
-        graph_widget = self.query_one("#graph_view_pane", Static)
-        graph_widget.update(self._get_graph_image(self.app.size))
-
-        # Update node tabs
-        tabs = self.query_one("#node_tabs", Tabs)
-        self._update_tabs()
-
-        # Update routing table
-        node = tabs.active_tab.id if tabs.active_tab else None
-        self._update_table_for_node(node)
-
-        # TODO maybe other components
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
