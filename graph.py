@@ -9,8 +9,7 @@ class RoutingTable():
         self.routes = {}
         self.routes[n] = [n, 0]
 
-    def show(self):
-        res = ""
+    def get_list(self):
         l = []
         for r in self.routes:
             m = self.routes[r][0]
@@ -19,7 +18,12 @@ class RoutingTable():
             l.append([r,m,self.routes[r][1]])
 
         l.sort(key=lambda route: route[2])
+        return l
 
+   
+    def show(self):
+        res = ""
+        l = self.get_list()
         for e in l:
             res += e[0] + " " + e[1] + " " + str(e[2]) + "\n"
         
