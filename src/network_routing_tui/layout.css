@@ -1,0 +1,80 @@
+Screen {
+    layout: horizontal;
+    background: #1e1e1e;
+    color: white;
+}
+
+#Header,
+#Footer {
+    background: #333333;
+    color: white;
+    height: 1;
+    content-align: center middle;
+}
+
+#left_pane {
+    width: 1fr;
+}
+
+#right_pane {
+    width: 3fr;
+}
+
+#routing_tables_title {
+    height: 1fr;
+    content-align: center middle;
+    background: #252526;
+    color: #f5f5f5;
+    border: none;
+}
+
+.node_tabs {
+    background: #1f1f1f;
+    color: #f5f5f5;
+    height: 2fr;
+    width: auto;
+    padding: 0 0;
+    border: none;
+}
+
+#node_tabs Tab {
+    background: #2a2a2a;
+    color: #f5f5f5;
+    text-style: none;
+}
+
+/* Active tab */
+#node_tabs Tab.-active {
+    background: #007acc;
+    color: white;
+    text-style: bold;
+}
+
+.routing_table_pane {
+    height: 19fr;
+    background: #2d2d2d;
+    padding: 0;
+}
+
+.command_input {
+    height: 1fr;
+    background: #252526;
+    color: #f5f5f5;
+    border: none;
+    padding: 0 1;
+}
+
+.graph_view_pane {
+    height: 12fr;
+    background: #202020;
+    padding: 0;
+    content-align: center middle;
+}
+
+.button {
+    height: 1fr;
+    width: 1fr;
+    background: #2a2a2a;
+    content-align: center middle;
+    padding: 0;
+}
