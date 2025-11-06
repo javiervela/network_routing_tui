@@ -1,4 +1,7 @@
+import re
+
 from rich_pixels import Pixels
+from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, HorizontalScroll
 from textual.widgets import (
@@ -6,6 +9,7 @@ from textual.widgets import (
     DataTable,
     Footer,
     Header,
+    Input,
     Static,
     Tab,
     Tabs,
@@ -24,22 +28,18 @@ class LayoutApp(App):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.graph: Graph | None = None
+        self.previous_tab_ids = []
 
     def on_mount(self) -> None:
         self.graph = Graph()
         self._load_test_graph()
-        self.refresh_graph()
+        self._refresh_graph()
 
     def _load_test_graph(self):
         # TODO just for test
         self.graph.load_file("./tests/graph.txt")
         for _ in range(5):
             self.graph.distance_vector()
-
-    def _get_tabs(self):
-        if self.graph is None:
-            return []
-        return [Tab(name, id=name) for name in self.graph.nodes]
 
     def _get_routing_table(self, node):
         if self.graph is None:
@@ -56,6 +56,83 @@ class LayoutApp(App):
         img = self.graph.generate_image(int(term_width / 1.5), int(term_height * 1.6))
         return Pixels.from_image(img)
 
+    def _update_tabs(self):
+        current_tab_ids = [id for id in self.graph.nodes]
+        to_add_tab_ids = [
+            id for id in current_tab_ids if id not in self.previous_tab_ids
+        ]
+        to_remove_tab_ids = [
+            id for id in self.previous_tab_ids if id not in current_tab_ids
+        ]
+
+        tabs = self.query_one("#node_tabs", Tabs)
+        for tab_id in to_remove_tab_ids:
+            tabs.remove_tab(tab_id)
+
+        for tab_id in to_add_tab_ids:
+            tabs.add_tab(Tab(tab_id, id=tab_id))
+
+        self.previous_tab_ids = current_tab_ids
+
+    def _execute_command(self, cmd: str) -> None:
+        # Edge add/update: "X Y cost"  (cost is integer)
+        m = re.fullmatch(r"([A-Z])\s+([A-Z])\s+(\d+)", cmd)
+        if m:
+            x, y, cost = m.group(1), m.group(2), int(m.group(3))
+            print(f"Adding/updating edge {x} {y} with cost {cost}")
+            self.graph.add_edge(x, y, cost)
+            self._refresh_graph()
+            return
+
+        # Edge remove: "X Y -"
+        m = re.fullmatch(r"([A-Z])\s+([A-Z])\s+-", cmd)
+        if m:
+            x, y = m.group(1), m.group(2)
+            print(f"Removing edge {x} {y}")
+            self.graph.remove_edge(x, y)
+            self._refresh_graph()
+            return
+
+        # Link-state: "ls X"
+        m = re.fullmatch(r"ls\s+([A-Z])", cmd)
+        if m:
+            node = m.group(1)
+            print(f"Link-state algorithm initiated for node {node}")
+            self.graph.link_state(node)  # TODO implement
+            self._refresh_graph(node)
+            return
+
+        # Distance-vector iteration then show X: "dv X"
+        m = re.fullmatch(r"dv\s+([A-Z])", cmd)
+        if m:
+            node = m.group(1)
+            print(f"Distance-vector iteration initiated for node {node}")
+            self.graph.distance_vector()  # TODO for 1 specific node?
+            self._refresh_graph(node)
+            return
+
+        # Convenience commands
+        if cmd == "clear":
+            self.graph.clear()
+            self._refresh_graph()
+            return
+        if cmd == "show":
+            self.graph.show()
+            return
+        # TODO implement and test
+        if cmd.startswith("export "):
+            path = cmd.split(" ", 1)[1]
+            self.graph.save_file(path)
+            return
+        # TODO implement and test
+        if cmd.startswith("load "):
+            path = cmd.split(" ", 1)[1]
+            self.graph.load_file(path)
+            self._refresh_graph()
+            return
+
+        self.console.log(f"Unknown command: {cmd}")
+
     def compose(self) -> ComposeResult:
         yield Header(id="Header")
 
@@ -64,10 +141,15 @@ class LayoutApp(App):
                 yield Static("Routing Tables", id="routing_tables_title")
 
                 with HorizontalScroll():
-                    tabs = self._get_tabs()
-                    yield Tabs(*tabs, name="Nodes", id="node_tabs", classes="node_tabs")
+                    yield Tabs(name="Nodes", id="node_tabs", classes="node_tabs")
 
                 yield DataTable(id="routing_table", classes="routing_table_pane")
+
+                yield Input(
+                    placeholder="Command Input",
+                    id="command_input",
+                    classes="command_input",
+                )
 
             with Vertical(id="right_pane"):
                 yield Static(
@@ -87,7 +169,6 @@ class LayoutApp(App):
         yield Footer(id="Footer")
 
     def _update_table_for_node(self, node):
-        print("HERHE HERE")
         table = self.query_one(DataTable)
         if not table.columns:
             # TODO make constants
@@ -107,16 +188,14 @@ class LayoutApp(App):
         node = event.tab.id
         self._update_table_for_node(node)
 
-    def refresh_graph(self):
+    def _refresh_graph(self):
         # Update graph image
         graph_widget = self.query_one("#graph_view_pane", Static)
         graph_widget.update(self._get_graph_image(self.app.size))
 
         # Update node tabs
         tabs = self.query_one("#node_tabs", Tabs)
-        tabs.clear()
-        for tab in self._get_tabs():
-            tabs.add_tab(tab)
+        self._update_tabs()
 
         # Update routing table
         node = tabs.active_tab.id if tabs.active_tab else None
@@ -136,11 +215,19 @@ class LayoutApp(App):
         elif button_id == "button_clear":
             print("Clear button pressed")
             self.graph.clear()
-            self.refresh_graph()
+            self._refresh_graph()
         elif button_id == "button_load_test":
             print("Load Test Graph button pressed")
             self._load_test_graph()
-            self.refresh_graph()
+            self._refresh_graph()
+
+    @on(Input.Submitted, "#command_input")
+    def handle_command_submit(self, event: Input.Submitted) -> None:
+        cmd = event.value.strip()
+        if not cmd:
+            return
+        self._execute_command(cmd)
+        event.input.value = ""
 
 
 def main():

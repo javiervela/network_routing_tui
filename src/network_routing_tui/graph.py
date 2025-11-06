@@ -10,21 +10,36 @@ from network_routing_tui.routing_table import RoutingTable
 
 class Graph(nx.Graph):
     def apply_input(self, inp):
+        # TODO will deprecate in favor of __main__ implementation
         inp = inp.split(" ")  # Should be 3 values
 
         if inp[2] == "-":
-            if self.has_edge(inp[0], inp[1]):
-                self.remove_edge(inp[0], inp[1])
-            else:
-                error.warning("No edges to remove between " + inp[0] + " and " + inp[1])
+            self.remove_edge(inp[0], inp[1])
         else:
-            self.create_if_needed(inp[0])
-            self.create_if_needed(inp[1])
             self.add_edge(inp[0], inp[1], weight=int(inp[2]))
 
-    def create_if_needed(self, u):
+    def remove_edge(self, u, v):
+        # remove edge if exists, else warn
+        if self.has_edge(u, v):
+            super().remove_edge(u, v)
+        else:
+            error.warning("No edges to remove between " + u + " and " + v)
+        # remove nodes if they have no remaining edges
+        if self.degree(u) == 0:
+            print("Removing node " + u + " as it has no remaining edges.")
+            self.remove_node(u)
+        if self.degree(v) == 0:
+            print("Removing node " + v + " as it has no remaining edges.")
+            self.remove_node(v)
+
+    def add_edge(self, u, v, weight):
+        # create nodes if they don't exist
         if not self.has_node(u):
             self.add_node(u, routable=RoutingTable(u))
+        if not self.has_node(v):
+            self.add_node(v, routable=RoutingTable(v))
+        # add edge
+        return super().add_edge(u, v, weight=weight)
 
     def load_file(self, src):
         with open(src) as f:
