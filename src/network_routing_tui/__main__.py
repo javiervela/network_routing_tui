@@ -3,7 +3,7 @@ import re
 from rich_pixels import Pixels
 from textual import on
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical, HorizontalScroll
+from textual.containers import Horizontal, Vertical
 from textual.widgets import (
     Button,
     DataTable,
@@ -65,7 +65,7 @@ class LayoutApp(App):
             id for id in self.previous_tab_ids if id not in current_tab_ids
         ]
 
-        tabs = self.query_one("#node_tabs", Tabs)
+        tabs = self.query_one(Tabs)
         for tab_id in to_remove_tab_ids:
             tabs.remove_tab(tab_id)
 
@@ -77,8 +77,9 @@ class LayoutApp(App):
     def _update_table_for_node(self, node):
         table = self.query_one(DataTable)
         if not table.columns:
-            # TODO make constants
-            table.add_columns("Destination", "Via/Next-Hop", "Cost")
+            # COLUMNS = ["Destination", "Via/Next-Hop", "Cost"]
+            COLUMNS = ["Dest.", "Via", "Cost"]
+            table.add_columns(*COLUMNS)
 
         table.clear()
         table.zebra_stripes = True
@@ -94,7 +95,7 @@ class LayoutApp(App):
         graph_widget.update(self._get_graph_image(self.app.size))
 
         # Update node tabs
-        tabs = self.query_one("#node_tabs", Tabs)
+        tabs = self.query_one(Tabs)
         self._update_tabs()
 
         # Update routing table
@@ -164,42 +165,36 @@ class LayoutApp(App):
 
     def compose(self) -> ComposeResult:
         yield Header(id="Header")
-
-        with Horizontal():
-            with Vertical(id="left_pane"):
-                yield Static("Routing Tables", id="routing_tables_title")
-
-                with HorizontalScroll():
-                    yield Tabs(name="Nodes", id="node_tabs", classes="node_tabs")
-
-                yield DataTable(id="routing_table", classes="routing_table_pane")
-
-                yield Input(
-                    placeholder="Command Input",
-                    id="command_input",
-                    classes="command_input",
-                )
-
-            with Vertical(id="right_pane"):
-                yield Static(
-                    self._get_graph_image(self.app.size),
-                    id="graph_view_pane",
-                    classes="graph_view_pane",
-                )
-
-                with Horizontal():
-                    yield Button("Show", id="button_show", classes="button")
-                    yield Button("Export", id="button_export", classes="button")
-                    yield Button("Clear", id="button_clear", classes="button")
-                    yield Button(
-                        "Load Test Graph", id="button_load_test", classes="button"
+        with Vertical(id="app_pane"):
+            with Horizontal(id="visualization_pane"):
+                with Vertical(id="left_visualization_pane", classes="left_pane"):
+                    yield Static("Routing Tables", id="routing_tables_title")
+                    yield Tabs(name="Nodes", id="node_tabs")
+                    yield DataTable(id="routing_table", classes="routing_table_pane")
+                with Vertical(id="right_visualization_pane", classes="right_pane"):
+                    yield Static(
+                        self._get_graph_image(self.app.size),
+                        id="graph_view_pane",
+                        classes="graph_view_pane",
                     )
-
+            with Horizontal(id="command_pane"):
+                with Vertical(id="left_command_pane", classes="left_pane"):
+                    yield Input(
+                        placeholder="Command Input",
+                        id="command_input",
+                        classes="command_input",
+                    )
+                with Vertical(id="right_command_pane", classes="right_pane"):
+                    with Horizontal():
+                        yield Button("Show", id="button_show", classes="button")
+                        yield Button("Export", id="button_export", classes="button")
+                        yield Button("Clear", id="button_clear", classes="button")
+                        yield Button(
+                            "Load Test Graph", id="button_load_test", classes="button"
+                        )
         yield Footer(id="Footer")
 
     def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
-        """Handle TabActivated message sent by Tabs."""
-
         node = event.tab.id
         self._update_table_for_node(node)
 
@@ -211,7 +206,7 @@ class LayoutApp(App):
         elif button_id == "button_export":
             print("Export button pressed")
             # TODO prompt where to save
-            self.graph.save_file("./exported_graph.txt")
+            self.graph.save_file("./tests/test.txt")
         elif button_id == "button_clear":
             print("Clear button pressed")
             self.graph.clear()

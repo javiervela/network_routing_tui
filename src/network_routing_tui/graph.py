@@ -57,7 +57,7 @@ class Graph(nx.Graph):
         res = []
         for v in self.neighbors(u):
             w = self.get_edge_data(u, v, "weight")["weight"]
-            res.append([v,w,u])
+            res.append([v, w, u])
         res.sort(key=lambda edge: edge[1])
         return res
 
@@ -71,18 +71,20 @@ class Graph(nx.Graph):
                 w = self.get_edge_data(n, v, "weight")["weight"]
                 self.nodes[n]["routable"].update_dv(routes[v], w)
 
-    def draw(self, seed=7):
+    def draw(self, tui=False, seed=7):
         pos = nx.spring_layout(self, seed=seed)
 
         nx.draw_networkx_nodes(
             self,
             pos,
-            node_size=700,
+            node_size=600 if tui else 700,
+            node_color="skyblue" if tui else "#1f78b4",
         )
         nx.draw_networkx_edges(
             self,
             pos,
             width=4,
+            edge_color="gray" if tui else "k",
         )
         nx.draw_networkx_labels(
             self,
@@ -91,8 +93,9 @@ class Graph(nx.Graph):
             font_family="sans-serif",
         )
 
-        edge_labels = nx.get_edge_attributes(self, "weight")
-        nx.draw_networkx_edge_labels(self, pos, edge_labels, rotate=False)
+        if not tui:
+            edge_labels = nx.get_edge_attributes(self, "weight")
+            nx.draw_networkx_edge_labels(self, pos, edge_labels, rotate=False)
 
     def show(self):
         self.draw()
@@ -115,16 +118,7 @@ class Graph(nx.Graph):
         ax.set_axis_off()
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
-        nx.draw(
-            self,
-            pos=pos,
-            ax=ax,
-            node_color="skyblue",
-            node_size=600,
-            edge_color="gray",
-            with_labels=True,
-            font_size=20,
-        )
+        self.draw(tui=True)
 
         buf = io.BytesIO()
         fig.savefig(
