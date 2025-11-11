@@ -53,6 +53,14 @@ class Graph(nx.Graph):
             for u, v, weight in self.edges.data("weight"):
                 f.write(str(u) + " " + str(v) + " " + str(weight) + "\n")
 
+    def get_neighbors_distance(self, u):
+        res = []
+        for v in self.neighbors(u):
+            w = self.get_edge_data(u, v, "weight")["weight"]
+            res.append([v,w,u])
+        res.sort(key=lambda edge: edge[1])
+        return res
+
     def distance_vector(self):
         routes = {}
         for n in self.nodes:
