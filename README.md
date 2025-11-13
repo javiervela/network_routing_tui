@@ -9,6 +9,7 @@ uv init --lib --name network_routing_tui --python=3.12
 uv sync
 uv lock
 uv run nrt 
+uv run python tests/test.py
 ``` -->
 
 
