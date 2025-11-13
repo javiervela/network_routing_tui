@@ -11,13 +11,24 @@ from network_routing_tui.link_state import link_state
 
 class Graph(nx.Graph):
     def apply_input(self, inp):
-        # TODO will deprecate in favor of __main__ implementation
         inp = inp.split(" ")  # Should be 3 values
 
         if inp[2] == "-":
             self.remove_edge(inp[0], inp[1])
         else:
             self.add_edge(inp[0], inp[1], weight=int(inp[2]))
+
+    def load_file(self, src):
+        with open(src) as f:
+            l = f.readline()
+            while l != "":
+                self.apply_input(l)
+                l = f.readline()
+
+    def save_file(self, dest):
+        with open(dest, "w", encoding="utf-8") as f:
+            for u, v, weight in self.edges.data("weight"):
+                f.write(str(u) + " " + str(v) + " " + str(weight) + "\n")
 
     def remove_edge(self, u, v):
         # remove edge if exists, else warn
@@ -42,18 +53,6 @@ class Graph(nx.Graph):
         # add edge
         return super().add_edge(u, v, weight=weight)
 
-    def load_file(self, src):
-        with open(src) as f:
-            l = f.readline()
-            while l != "":
-                self.apply_input(l)
-                l = f.readline()
-
-    def save_file(self, dest):
-        with open(dest, "w", encoding="utf-8") as f:
-            for u, v, weight in self.edges.data("weight"):
-                f.write(str(u) + " " + str(v) + " " + str(weight) + "\n")
-
     def get_neighbors_distance(self, u):
         res = []
         for v in self.neighbors(u):
@@ -61,6 +60,14 @@ class Graph(nx.Graph):
             res.append([v, w, u])
         res.sort(key=lambda edge: edge[1])
         return res
+
+    def get_routing_table(self, n):
+        if not self.has_node(n):
+            return None
+        return self.nodes[n]["routable"]
+
+    def print_table(self, n):
+        print(self.get_routing_table(n).show())
 
     def distance_vector(self):
         routes = {}
@@ -72,6 +79,10 @@ class Graph(nx.Graph):
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
                 self.nodes[n]["routable"].update_dv(routes[v], w, v)
+
+    def link_state(self, node):
+        resR = link_state(self, node)
+        self.nodes[node]["routable"] = resR
 
     def draw(self, tui=False, seed=7):
         pos = nx.spring_layout(self, seed=seed)
@@ -99,21 +110,7 @@ class Graph(nx.Graph):
             edge_labels = nx.get_edge_attributes(self, "weight")
             nx.draw_networkx_edge_labels(self, pos, edge_labels, rotate=False)
 
-    def show(self):
-        self.draw()
-        plt.show()
-
-    def print_table(self, n):
-        print(self.get_routing_table(n).show())
-
-    def get_routing_table(self, n):
-        if not self.has_node(n):
-            return None
-        return self.nodes[n]["routable"]
-
     def generate_image(self, width_px: int, height_px: int, dpi=30) -> Image.Image:
-        # TODO make this use self.draw()
-        pos = nx.spring_layout(self, seed=42)
         fig_w, fig_h = width_px / dpi, height_px / dpi
         fig, ax = plt.subplots(figsize=(fig_w, fig_h), dpi=dpi)
         fig.patch.set_facecolor("none")
@@ -131,6 +128,6 @@ class Graph(nx.Graph):
         img = Image.open(buf).convert("RGBA")
         return img
 
-    def link_state(self, node):
-        resR = link_state(self, node)
-        self.nodes[node]["routable"] = resR
+    def show(self):
+        self.draw()
+        plt.show()
