@@ -164,7 +164,7 @@ class LayoutApp(App):
         # Warn in input
         # TODO make warning visible in TUI
         self.console.log(f"Unknown command: {cmd}")
-        raise ValueError(f"Unknown command: {cmd}")
+        # raise ValueError(f"Unknown command: {cmd}")
 
     def compose(self) -> ComposeResult:
         yield Header(id="Header")

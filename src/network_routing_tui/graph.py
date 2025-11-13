@@ -6,6 +6,7 @@ import networkx as nx
 
 from network_routing_tui import error
 from network_routing_tui.routing_table import RoutingTable
+from network_routing_tui.link_state import link_state
 
 
 class Graph(nx.Graph):
@@ -129,3 +130,7 @@ class Graph(nx.Graph):
         buf.seek(0)
         img = Image.open(buf).convert("RGBA")
         return img
+
+    def link_state(self, node):
+        resR = link_state(self, node)
+        self.nodes[node]["routable"] = resR
