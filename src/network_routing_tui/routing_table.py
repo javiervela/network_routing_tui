@@ -42,14 +42,21 @@ class RoutingTable:
         if not n in self.routes or w < self.get_distance(n):
             self.routes[n] = [seq, w]
 
-    def update_dv(self, routable, w):
+    def remove_route(self, n):
+        self.routes.pop(n, None)
+
+    def remove_neighbors(self):
+        for k in self.routes:
+            if len(self.routes[k]) > 2:
+                if self.routes[k][0] == self.routes[k][2]:
+                    self.remove_route(k)
+
+    def update_dv(self, routable, w, via):
         for dest in routable.get_routes():
             d = routable.get_distance(dest)
-            if d == 0:
-                seq = self.id
-            else:
-                seq = routable.get_seq(dest)
-            self.add_route(dest, w + d, seq)
+            if self.get_seq(dest) == via:
+                self.remove_route(dest)
+            self.add_route(dest, w + d, via)
 
     def get_table_as_list(self):
         return [

@@ -1,6 +1,16 @@
 A D 5
 A B 2
 A E 6
+A J 1
+A K 1
+A L 1
+A Z 1
+A X 1
+A W 1
+A Q 1
+A R 1
+A T 1
+A U 1
 D F 2
 D E 4
 F E 1

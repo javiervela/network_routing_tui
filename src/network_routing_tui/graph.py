@@ -67,9 +67,10 @@ class Graph(nx.Graph):
             routes[n] = self.nodes[n]["routable"].copy()
 
         for n in self.nodes:
+            self.nodes[n]["routable"].remove_neighbors()
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
-                self.nodes[n]["routable"].update_dv(routes[v], w)
+                self.nodes[n]["routable"].update_dv(routes[v], w, v)
 
     def draw(self, tui=False, seed=7):
         pos = nx.spring_layout(self, seed=seed)
