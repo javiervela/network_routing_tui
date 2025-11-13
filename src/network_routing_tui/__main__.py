@@ -128,8 +128,8 @@ class LayoutApp(App):
         if m:
             node = m.group(1)
             print(f"Link-state algorithm initiated for node {node}")
-            self.graph.link_state(node)  # TODO implement
-            self._refresh_graph(node)
+            self.graph.link_state(node)
+            self._refresh_graph()
             return
 
         # Distance-vector iteration then show X: "dv X"
@@ -137,8 +137,8 @@ class LayoutApp(App):
         if m:
             node = m.group(1)
             print(f"Distance-vector iteration initiated for node {node}")
-            self.graph.distance_vector()  # TODO for 1 specific node?
-            self._refresh_graph(node)
+            self.graph.distance_vector()  # TODO for 1 specific node!!
+            self._refresh_graph()
             return
 
         # Convenience commands
@@ -161,7 +161,10 @@ class LayoutApp(App):
             self._refresh_graph()
             return
 
+        # Warn in input
+        # TODO make warning visible in TUI
         self.console.log(f"Unknown command: {cmd}")
+        raise ValueError(f"Unknown command: {cmd}")
 
     def compose(self) -> ComposeResult:
         yield Header(id="Header")
@@ -232,3 +235,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# TODO implement --cli flag to run without TUI
