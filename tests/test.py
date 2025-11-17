@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 
 from network_routing_tui.graph import Graph
+from network_routing_tui.link_state import link_state
 
 
 if __name__ == "__main__":
@@ -9,6 +10,11 @@ if __name__ == "__main__":
     G.load_file("./tests/graph.txt")
     G.save_file("./tests/test.txt")
 
+    rT = link_state(G,"A")
+    print(rT.show())
+    G.show()
+
+    """
     for i in range(5):
         print("-------")
         G.distance_vector()
@@ -31,3 +37,4 @@ if __name__ == "__main__":
     print(G.get_routing_table("A").get_table_as_list())
 
     G.show()
+    """
