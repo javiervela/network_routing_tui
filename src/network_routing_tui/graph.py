@@ -46,9 +46,6 @@ class Graph(nx.Graph):
             return None
         return self.nodes[n]["routable"]
 
-    def print_table(self, n):
-        print(self.get_routing_table(n).show())
-
     def distance_vector(self):
         routes = {}
         for n in self.nodes:

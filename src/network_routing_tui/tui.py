@@ -64,8 +64,8 @@ class NetworkRoutingTUI(App):
     TITLE = "Network Routing"
     SUB_TITLE = "Interactive Network Topology — Routing Visualization"
 
-    LOAD_DEFAULT_VALUE = "./tests/graph.txt"
-    EXPORT_DEFAULT_VALUE = "./tests/test.txt"
+    LOAD_DEFAULT_FILENAME = "./tests/graph.txt"
+    SAVE_GRAPH_DEFAULT_FILENAME = "./tests/test.txt"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -100,7 +100,9 @@ class NetworkRoutingTUI(App):
                 with Vertical(id="right_command_pane", classes="right_pane"):
                     with Horizontal():
                         yield Button("Load", id="button_load", classes="button")
-                        yield Button("Export", id="button_export", classes="button")
+                        yield Button(
+                            "Save Graph", id="button_save_graph", classes="button"
+                        )
                         yield Button("Clear", id="button_clear", classes="button")
                         yield Button("Show", id="button_show", classes="button")
         yield Footer(id="Footer")
@@ -121,8 +123,9 @@ class NetworkRoutingTUI(App):
         button_id = event.button.id
         if button_id == "button_show":
             self._command_show()
-        elif button_id == "button_export":
-            self._command_export()
+        elif button_id == "button_save_graph":
+            self._command_save_graph()
+        # TODO implement save routing table button
         elif button_id == "button_clear":
             self._command_clear()
         elif button_id == "button_load":
@@ -169,21 +172,42 @@ class NetworkRoutingTUI(App):
             self.network_routing.graph.show()
 
     @work
-    async def _command_export(self, filename=None) -> None:
+    async def _command_save_graph(self, filename=None) -> None:
         if not filename:
             filename = await self.push_screen_wait(
-                FilenamePopup(default_value=self.EXPORT_DEFAULT_VALUE)
+                FilenamePopup(default_value=self.SAVE_GRAPH_DEFAULT_FILENAME)
             )
         if not filename:
-            self.notify("Export cancelled", severity="warning")
+            self.notify("Save Graph cancelled", severity="warning")
             return
         if self.network_routing is None:
             return
         try:
-            self.network_routing.save(filename)
-            self.notify(f"Graph exported successfully to {filename}")
+            self.network_routing.save_graph(filename)
+            self.notify(f"Graph saved successfully to {filename}")
         except Exception as e:
-            self.notify(f"Error exporting graph: {e}", severity="error")
+            self.notify(f"Error saving graph: {e}", severity="error")
+
+    @work
+    async def _command_save_routing_table(self, node=None, filename=None) -> None:
+        # TODO how to ask for both node and filename?
+        # if not filename:
+        #     filename = await self.push_screen_wait(
+        #         FilenamePopup(default_value=f"{node}_routing_table.txt")
+        #     )
+        # if not filename:
+        #     self.notify("Save Routing Table cancelled", severity="warning")
+        #     return
+
+        if self.network_routing is None:
+            return
+        try:
+            self.network_routing.save_routing_table(node, filename)
+            self.notify(
+                f"Routing table for node {node} saved successfully to {filename}"
+            )
+        except Exception as e:
+            self.notify(f"Error saving routing table: {e}", severity="error")
 
     def _command_clear(self) -> None:
         if self.network_routing is None:
@@ -196,7 +220,7 @@ class NetworkRoutingTUI(App):
     async def _command_load(self, filename=None) -> None:
         if not filename:
             filename = await self.push_screen_wait(
-                FilenamePopup(default_value=self.LOAD_DEFAULT_VALUE)
+                FilenamePopup(default_value=self.LOAD_DEFAULT_FILENAME)
             )
         if not filename:
             self.notify("Load cancelled", severity="warning")
@@ -233,9 +257,13 @@ class NetworkRoutingTUI(App):
             self._command_distance_vector(node)
         elif command == NetworkRoutingCommand.SHOW:
             self._command_show()
-        elif command == NetworkRoutingCommand.EXPORT:
+        elif command == NetworkRoutingCommand.SAVE_GRAPH:
             (filename,) = params
-            self._command_export(filename)
+            self._command_save_graph(filename)
+        elif command == NetworkRoutingCommand.SAVE_ROUTING_TABLE:
+            (node, filename) = params
+            self._command_save_routing_table(node, filename)
+        # TODO implement print routing table command?
         elif command == NetworkRoutingCommand.CLEAR:
             self._command_clear()
         elif command == NetworkRoutingCommand.LOAD:
