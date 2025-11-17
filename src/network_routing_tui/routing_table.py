@@ -1,7 +1,7 @@
 class RoutingTable:
     def __init__(self, n):
         self.id = n
-        self.routes = {}
+        self.routes = {}   #routes[dest] = [via, distance]
         self.routes[n] = [n, 0]
 
     def show(self):
@@ -38,22 +38,23 @@ class RoutingTable:
             return self.routes[n][0]
         return "ERROR"
 
-    def add_route(self, n, w, seq):
+    def add_route(self, n, w, via):
         if not n in self.routes or w < self.get_distance(n):
-            self.routes[n] = [seq, w]
+            self.routes[n] = [via, w]
 
     def remove_route(self, n):
         self.routes.pop(n, None)
 
     def remove_neighbors(self):
-        for k in self.routes:
-            if len(self.routes[k]) > 2:
-                if self.routes[k][0] == self.routes[k][2]:
-                    self.remove_route(k)
+        for k in list(self.routes.keys()):
+            if self.routes[k][0] == k and k != self.id:
+                self.remove_route(k)
 
-    def update_dv(self, routable, w, via):
+    def update_dv(self, routable, w, via, me):
         for dest in routable.get_routes():
             d = routable.get_distance(dest)
+            if routable.get_seq(dest) == me: # This route goes through myself, I don't need to learn from it
+                continue 
             if self.get_seq(dest) == via:
                 self.remove_route(dest)
             self.add_route(dest, w + d, via)

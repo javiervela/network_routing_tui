@@ -78,7 +78,7 @@ class Graph(nx.Graph):
             self.nodes[n]["routable"].remove_neighbors()
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
-                self.nodes[n]["routable"].update_dv(routes[v], w, v)
+                self.nodes[n]["routable"].update_dv(routes[v], w, v, n)
 
     def link_state(self, node):
         resR = link_state(self, node)
