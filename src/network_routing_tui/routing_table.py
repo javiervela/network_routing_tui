@@ -5,6 +5,7 @@ class RoutingTable:
         self.routes[n] = [n, 0]
 
     def show(self):
+        # TODO change show naming
         res = ""
         l = []
         for r in self.routes:

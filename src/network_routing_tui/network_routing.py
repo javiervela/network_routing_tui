@@ -11,7 +11,9 @@ class NetworkRoutingCommand(Enum):
     LINK_STATE = "link_state"
     DISTANCE_VECTOR = "distance_vector"
     SHOW = "show"
-    EXPORT = "export"
+    SAVE_GRAPH = "saveg"
+    SAVE_ROUTING_TABLE = "savert"
+    PRINT_ROUTING_TABLE = "print"
     CLEAR = "clear"
     LOAD = "load"
     HELP = "help"
@@ -23,19 +25,29 @@ class NetworkRouting:
     RE_REMOVE_EDGE = re.compile(r"([A-Z])\s+([A-Z])\s+-")
     RE_LINK_STATE = re.compile(r"ls\s+([A-Z])")
     RE_DISTANCE_VECTOR = re.compile(r"dv\s+([A-Z])")
+    RE_SAVE_GRAPH = re.compile(r"saveg\s+(\S+)")
+    RE_SAVE_ROUTING_TABLE = re.compile(r"savert\s+([A-Z])\s+(\S+)")
+    RE_PRINT_ROUTING_TABLE = re.compile(r"print\s+([A-Z])")
+    RE_CLEAR = re.compile(r"clear")
+    RE_LOAD = re.compile(r"load\s+(\S+)")
+    RE_HELP = re.compile(r"help")
+    RE_QUIT = re.compile(r"(quit|exit)")
+    RE_SHOW = re.compile(r"show")
 
     HELP_TEXT = (
         "Available commands:\n\n"
-        "ADD EDGE: 'X Y COST'      - Add or update an edge between nodes X and Y with the given COST.\n"
-        "REMOVE EDGE: 'X Y -'      - Remove the edge between nodes X and Y.\n"
-        "LINK-STATE: 'ls X'        - Execute the link-state algorithm for node X.\n"
-        "DISTANCE-VECTOR: 'dv X'   - Execute one iteration of the distance-vector algorithm.\n"
-        "SHOW: 'show'              - Display the current graph.\n"
-        "EXPORT: 'export FILENAME' - Export the current graph to a file named FILENAME.\n"
-        "CLEAR: 'clear'            - Clear the current graph.\n"
-        "LOAD: 'load FILENAME'     - Load a graph from a file named FILENAME.\n"
-        "HELP: 'help'              - Show this help message.\n"
-        "QUIT: 'quit' or 'exit'    - Exit the CLI.\n"
+        "ADD EDGE: 'X Y COST'                  - Add an edge (nodes X and Y) with COST.\n"
+        "REMOVE EDGE: 'X Y -'                  - Remove the edge between nodes X and Y.\n"
+        "LINK-STATE: 'ls X'                    - Execute the link-state algorithm for node X.\n"
+        "DISTANCE-VECTOR: 'dv X'               - Execute one iteration of the distance-vector algorithm.\n"
+        "SHOW: 'show'                          - Display the graph.\n"
+        "SAVE GRAPH: 'saveg FILENAME'          - Save the graph to a file named FILENAME.\n"
+        "SAVE ROUTING TABLE: 'savert FILENAME' - Save the routing table to a file named FILENAME.\n"
+        "PRINT ROUTING TABLE: 'print NODE'     - Print the routing table for node NODE.\n"
+        "CLEAR: 'clear'                        - Clear the graph.\n"
+        "LOAD: 'load FILENAME'                 - Load a graph from a file named FILENAME.\n"
+        "HELP: 'help'                          - Show this help message.\n"
+        "QUIT: 'quit' or 'exit'                - Exit the CLI.\n"
     )
 
     def __init__(self):
@@ -62,11 +74,15 @@ class NetworkRouting:
     def show(self):
         self.graph.show()
 
-    def export(self, filename):
-        self.graph.save_file(filename)
-
     def clear(self):
         self.graph.clear()
+
+    def print_routing_table(self, node):
+        rt = self.graph.get_routing_table(node)
+        if rt is None:
+            print(f"No routing table found for node {node}.")
+        else:
+            print(rt.show())
 
     def apply_input(self, inp):
         # TODO do something about this method
@@ -85,11 +101,19 @@ class NetworkRouting:
                 self.apply_input(l)
                 l = f.readline()
 
-    def save(self, dest):
-        # TODO do something about this method
-        with open(dest, "w", encoding="utf-8") as f:
+    def save_graph(self, filename):
+        # TODO implement
+        with open(filename, "w", encoding="utf-8") as f:
             for u, v, weight in self.graph.edges.data("weight"):
                 f.write(str(u) + " " + str(v) + " " + str(weight) + "\n")
+
+    def save_routing_table(self, node, filename):
+        with open(filename, "w", encoding="utf-8") as f:
+            rt = self.graph.get_routing_table(node)
+            if rt is None:
+                print(f"No routing table found for node {node}.\n")
+            else:
+                f.write(rt.show())
 
     def parse_command(self, cmd):
         if m := self.RE_ADD_EDGE.fullmatch(cmd):
@@ -104,21 +128,30 @@ class NetworkRouting:
         elif m := self.RE_DISTANCE_VECTOR.fullmatch(cmd):
             node = m.group(1)
             return (NetworkRoutingCommand.DISTANCE_VECTOR, (node))
-        elif cmd == "show":
+        elif m := self.RE_SHOW.fullmatch(cmd):
             return (NetworkRoutingCommand.SHOW, ())
-        elif cmd.startswith("export "):
-            filename = cmd.split(" ", 1)[1]
-            return (NetworkRoutingCommand.EXPORT, (filename,))
-        elif cmd == "clear":
+        elif m := self.RE_SAVE_GRAPH.fullmatch(cmd):
+            filename = m.group(1)
+            return (NetworkRoutingCommand.SAVE_GRAPH, (filename,))
+        elif m := self.RE_SAVE_ROUTING_TABLE.fullmatch(cmd):
+            node, filename = m.group(1), m.group(2)
+            return (NetworkRoutingCommand.SAVE_ROUTING_TABLE, (node, filename))
+        elif m := self.RE_PRINT_ROUTING_TABLE.fullmatch(cmd):
+            node = m.group(1)
+            return (NetworkRoutingCommand.PRINT_ROUTING_TABLE, (node,))
+        elif m := self.RE_CLEAR.fullmatch(cmd):
             return (NetworkRoutingCommand.CLEAR, ())
-        elif cmd.startswith("load "):
-            filename = cmd.split(" ", 1)[1]
+        elif m := self.RE_LOAD.fullmatch(cmd):
+            filename = m.group(1)
             return (NetworkRoutingCommand.LOAD, (filename,))
-        elif cmd == "help":
+        elif m := self.RE_HELP.fullmatch(cmd):
             return (NetworkRoutingCommand.HELP, ())
-        elif cmd == "quit" or cmd == "exit":
+        elif m := self.RE_QUIT.fullmatch(cmd):
             return (NetworkRoutingCommand.QUIT, ())
         else:
             return (None, None)
 
-    # TODO print_routing_table
+
+# TODO save and load methods for graph and routing tables
+# TODO add warnings and errors
+# TODO add file autocompletion
