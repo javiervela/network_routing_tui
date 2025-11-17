@@ -1,21 +1,49 @@
 import re
 
 from rich_pixels import Pixels
-from textual import on
+from textual import on, work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
+from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
     DataTable,
     Footer,
     Header,
     Input,
+    Label,
     Static,
     Tab,
     Tabs,
 )
 
 from network_routing_tui.graph import Graph
+
+
+class FilenamePopup(ModalScreen[str | None]):
+    def __init__(self):
+        super().__init__()
+        self.filename: str | None = None
+        print("FilenamePopup initialized")
+
+    def compose(self):
+        yield Vertical(
+            Label("Enter filename:"),
+            Input(id="input"),
+            Horizontal(
+                Button("OK", id="ok", variant="success"),
+                Button("Cancel", id="cancel", variant="error"),
+            ),
+            id="dialog",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed):
+        input_box = self.query_one("#input", Input)
+
+        if event.button.id == "ok":
+            self.dismiss(input_box.value.strip() or None)
+        else:
+            self.dismiss(None)
 
 
 class LayoutApp(App):
@@ -32,14 +60,7 @@ class LayoutApp(App):
 
     def on_mount(self) -> None:
         self.graph = Graph()
-        self._load_test_graph()
         self._refresh_graph()
-
-    def _load_test_graph(self):
-        # TODO just for test
-        self.graph.load_file("./tests/graph.txt")
-        for _ in range(5):
-            self.graph.distance_vector()
 
     def _get_routing_table(self, node):
         if self.graph is None:
@@ -104,6 +125,47 @@ class LayoutApp(App):
 
         # TODO maybe other components
 
+    def _command_show(self) -> None:
+        print("Command 'show' called")
+        if self.graph is None:
+            return
+        self.graph.show()
+
+    @work
+    async def _command_export(self, filename=None) -> None:
+        print("Command 'export' called")
+        if not filename:
+            filename = await self.push_screen_wait(FilenamePopup())
+        if not filename:
+            self.notify("Export cancelled", severity="warning")
+            return
+        if self.graph is None:
+            return
+        self.graph.save_file(filename)
+        self.notify(f"Graph exported successfully to {filename}")
+
+    def _command_clear(self) -> None:
+        print("Command 'clear' called")
+        if self.graph is None:
+            return
+        self.graph.clear()
+        self.notify("Graph cleared successfully")
+        self._refresh_graph()
+
+    @work
+    async def _command_load(self, filename=None) -> None:
+        print("Command 'load' called")
+        if not filename:
+            filename = await self.push_screen_wait(FilenamePopup())
+        if not filename:
+            self.notify("Load cancelled", severity="warning")
+            return
+        if self.graph is None:
+            return
+        self.graph.load_file(filename)
+        self.notify(f"Graph loaded successfully from {filename}")
+        self._refresh_graph()
+
     def _execute_command(self, cmd: str) -> None:
         # Edge add/update: "X Y cost"  (cost is integer)
         m = re.fullmatch(r"([A-Z])\s+([A-Z])\s+(\d+)", cmd)
@@ -137,34 +199,34 @@ class LayoutApp(App):
         if m:
             node = m.group(1)
             print(f"Distance-vector iteration initiated for node {node}")
-            self.graph.distance_vector()  # TODO for 1 specific node!!
+            self.graph.distance_vector()
+            # TODO for 1 specific node: switch tab to it
+            # TODO check rest of implementation specs
             self._refresh_graph()
             return
 
         # Convenience commands
         if cmd == "clear":
-            self.graph.clear()
-            self._refresh_graph()
+            self._command_clear()
             return
+
         if cmd == "show":
-            self.graph.show()
+            self._command_show()
             return
-        # TODO implement and test
+
         if cmd.startswith("export "):
-            path = cmd.split(" ", 1)[1]
-            self.graph.save_file(path)
+            filename = cmd.split(" ", 1)[1]
+            self._command_export(filename)
             return
-        # TODO implement and test
+
         if cmd.startswith("load "):
-            path = cmd.split(" ", 1)[1]
-            self.graph.load_file(path)
-            self._refresh_graph()
+            # TODO implement and test
+            filename = cmd.split(" ", 1)[1]
+            self._command_load(filename)
             return
 
         # Warn in input
-        # TODO make warning visible in TUI
-        self.console.log(f"Unknown command: {cmd}")
-        # raise ValueError(f"Unknown command: {cmd}")
+        self.notify(f"Unrecognized command: {cmd}", severity="error")
 
     def compose(self) -> ComposeResult:
         yield Header(id="Header")
@@ -189,35 +251,26 @@ class LayoutApp(App):
                     )
                 with Vertical(id="right_command_pane", classes="right_pane"):
                     with Horizontal():
-                        yield Button("Show", id="button_show", classes="button")
+                        yield Button("Load", id="button_load", classes="button")
                         yield Button("Export", id="button_export", classes="button")
                         yield Button("Clear", id="button_clear", classes="button")
-                        yield Button(
-                            "Load Test Graph", id="button_load_test", classes="button"
-                        )
+                        yield Button("Show", id="button_show", classes="button")
         yield Footer(id="Footer")
 
     def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
         node = event.tab.id
         self._update_table_for_node(node)
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
         if button_id == "button_show":
-            print("Show button pressed")
-            self.graph.show()
+            self._command_show()
         elif button_id == "button_export":
-            print("Export button pressed")
-            # TODO prompt where to save
-            self.graph.save_file("./tests/test.txt")
+            self._command_export()
         elif button_id == "button_clear":
-            print("Clear button pressed")
-            self.graph.clear()
-            self._refresh_graph()
-        elif button_id == "button_load_test":
-            print("Load Test Graph button pressed")
-            self._load_test_graph()
-            self._refresh_graph()
+            self._command_clear()
+        elif button_id == "button_load":
+            self._command_load()
 
     @on(Input.Submitted, "#command_input")
     def handle_command_submit(self, event: Input.Submitted) -> None:
@@ -238,3 +291,4 @@ if __name__ == "__main__":
 
 
 # TODO implement --cli flag to run without TUI
+# TODO add warnings and errors
