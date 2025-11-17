@@ -37,7 +37,7 @@ class Graph(nx.Graph):
         res = []
         for v in self.neighbors(u):
             w = self.get_edge_data(u, v, "weight")["weight"]
-            res.append([v, w, u])
+            res.append([v, w, v])
         res.sort(key=lambda edge: edge[1])
         return res
 

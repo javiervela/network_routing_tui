@@ -15,7 +15,7 @@ def link_state(G, node):
             visited.append(newV[0])
             neighb = G.get_neighbors_distance(newV[0])
             neighb = [a for a in neighb if not a[0] in visited]
-            neighb = [[a[0], a[1] + newV[1], a[2]] for a in neighb]
+            neighb = [[a[0], a[1] + newV[1], newV[2]] for a in neighb]
 
             toVisit = toVisit + neighb
             toVisit.sort(key=lambda edge: edge[1])
