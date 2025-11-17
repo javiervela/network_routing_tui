@@ -85,7 +85,8 @@ FilenamePopup {
 
 #help_dialog {
     height: 25;
-    width: 80;
+    width: 110;
+    min-width: 50;
     padding: 1 2;
     border: round $accent;
     background: $panel;
