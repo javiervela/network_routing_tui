@@ -52,7 +52,7 @@ class LayoutApp(App):
     TITLE = "Network Routing"
     SUB_TITLE = "Interactive Network Topology — Routing Visualization"
 
-    self. = re.compile(r"([A-Z])\s+([A-Z])\s+(\d+)")
+    RE_ADD_EDGE = re.compile(r"([A-Z])\s+([A-Z])\s+(\d+)")
     RE_REMOVE_EDGE = re.compile(r"([A-Z])\s+([A-Z])\s+-")
     RE_LINK_STATE = re.compile(r"ls\s+([A-Z])")
     RE_DISTANCE_VECTOR = re.compile(r"dv\s+([A-Z])")
@@ -169,8 +169,11 @@ class LayoutApp(App):
             return
         if self.graph is None:
             return
-        self.graph.save_file(filename)
-        self.notify(f"Graph exported successfully to {filename}")
+        try:
+            self.graph.save_file(filename)
+            self.notify(f"Graph exported successfully to {filename}")
+        except Exception as e:
+            self.notify(f"Error exporting graph: {e}", severity="error")
 
     def _command_clear(self) -> None:
         print("Command 'clear' called")
@@ -190,8 +193,11 @@ class LayoutApp(App):
             return
         if self.graph is None:
             return
-        self.graph.load_file(filename)
-        self.notify(f"Graph loaded successfully from {filename}")
+        try:
+            self.graph.load_file(filename)
+            self.notify(f"Graph loaded successfully from {filename}")
+        except Exception as e:
+            self.notify(f"Error loading graph: {e}", severity="error")
         self._refresh_graph()
 
     def _execute_command(self, cmd: str) -> None:
@@ -207,15 +213,15 @@ class LayoutApp(App):
         elif m := self.RE_DISTANCE_VECTOR.fullmatch(cmd):
             node = m.group(1)
             self._command_distance_vector(node)
-        elif cmd == "clear":
-            self._command_clear()
-            return
         elif cmd == "show":
             self._command_show()
             return
         elif cmd.startswith("export "):
             filename = cmd.split(" ", 1)[1]
             self._command_export(filename)
+            return
+        elif cmd == "clear":
+            self._command_clear()
             return
         elif cmd.startswith("load "):
             filename = cmd.split(" ", 1)[1]
@@ -289,3 +295,4 @@ if __name__ == "__main__":
 
 # TODO implement --cli flag to run without TUI
 # TODO add warnings and errors
+# TODO create help command listing all commands, use a popup to show it
