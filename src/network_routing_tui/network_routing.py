@@ -15,6 +15,7 @@ class NetworkRoutingCommand(Enum):
     CLEAR = "clear"
     LOAD = "load"
     HELP = "help"
+    QUIT = "quit"
 
 
 class NetworkRouting:
@@ -24,15 +25,17 @@ class NetworkRouting:
     RE_DISTANCE_VECTOR = re.compile(r"dv\s+([A-Z])")
 
     HELP_TEXT = (
-        "Available commands:\n"
-        "1. ADD EDGE: 'X Y COST' - Add or update an edge between nodes X and Y with the given COST.\n"
-        "2. REMOVE EDGE: 'X Y -' - Remove the edge between nodes X and Y.\n"
-        "3. LINK-STATE: 'ls X' - Execute the link-state algorithm for node X.\n"
-        "4. DISTANCE-VECTOR: 'dv X' - Execute one iteration of the distance-vector algorithm for node X.\n"
-        "5. SHOW: 'show' - Display the current graph in the console.\n"
-        "6. EXPORT: 'export FILENAME' - Export the current graph to a file named FILENAME.\n"
-        "7. CLEAR: 'clear' - Clear the current graph.\n"
-        "8. LOAD: 'load FILENAME' - Load a graph from a file named FILENAME.\n"
+        "Available commands:\n\n"
+        "ADD EDGE: 'X Y COST'      - Add or update an edge between nodes X and Y with the given COST.\n"
+        "REMOVE EDGE: 'X Y -'      - Remove the edge between nodes X and Y.\n"
+        "LINK-STATE: 'ls X'        - Execute the link-state algorithm for node X.\n"
+        "DISTANCE-VECTOR: 'dv X'   - Execute one iteration of the distance-vector algorithm.\n"
+        "SHOW: 'show'              - Display the current graph.\n"
+        "EXPORT: 'export FILENAME' - Export the current graph to a file named FILENAME.\n"
+        "CLEAR: 'clear'            - Clear the current graph.\n"
+        "LOAD: 'load FILENAME'     - Load a graph from a file named FILENAME.\n"
+        "HELP: 'help'              - Show this help message.\n"
+        "QUIT: 'quit' or 'exit'    - Exit the CLI.\n"
     )
 
     def __init__(self):
@@ -113,5 +116,9 @@ class NetworkRouting:
             return (NetworkRoutingCommand.LOAD, (filename,))
         elif cmd == "help":
             return (NetworkRoutingCommand.HELP, ())
+        elif cmd == "quit" or cmd == "exit":
+            return (NetworkRoutingCommand.QUIT, ())
         else:
             return (None, None)
+
+    # TODO print_routing_table

@@ -243,6 +243,8 @@ class NetworkRoutingTUI(App):
             self._command_load(filename)
         elif command == NetworkRoutingCommand.HELP:
             self._command_help()
+        elif command == NetworkRoutingCommand.QUIT:
+            self.exit()
         elif command is None:
             self.notify(f"Unrecognized command: {cmd}", severity="error")
 
