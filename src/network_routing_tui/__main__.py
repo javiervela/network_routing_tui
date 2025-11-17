@@ -20,6 +20,19 @@ from textual.widgets import (
 from network_routing_tui.graph import Graph
 
 
+class HelpPopup(ModalScreen):
+    def compose(self):
+        yield Vertical(
+            Static(LayoutApp.HELP_TEXT, id="help_text"),
+            Button("Close", id="close", variant="primary"),
+            id="help_dialog",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id == "close":
+            self.dismiss()
+
+
 class FilenamePopup(ModalScreen[str | None]):
     def __init__(self):
         super().__init__()
@@ -56,6 +69,18 @@ class LayoutApp(App):
     RE_REMOVE_EDGE = re.compile(r"([A-Z])\s+([A-Z])\s+-")
     RE_LINK_STATE = re.compile(r"ls\s+([A-Z])")
     RE_DISTANCE_VECTOR = re.compile(r"dv\s+([A-Z])")
+
+    HELP_TEXT = (
+        "Available commands:\n"
+        "1. ADD EDGE: 'X Y COST' - Add or update an edge between nodes X and Y with the given COST.\n"
+        "2. REMOVE EDGE: 'X Y -' - Remove the edge between nodes X and Y.\n"
+        "3. LINK-STATE: 'ls X' - Execute the link-state algorithm for node X.\n"
+        "4. DISTANCE-VECTOR: 'dv X' - Execute one iteration of the distance-vector algorithm for node X.\n"
+        "5. SHOW: 'show' - Display the current graph in the console.\n"
+        "6. EXPORT: 'export FILENAME' - Export the current graph to a file named FILENAME.\n"
+        "7. CLEAR: 'clear' - Clear the current graph.\n"
+        "8. LOAD: 'load FILENAME' - Load a graph from a file named FILENAME.\n"
+    )
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -200,6 +225,10 @@ class LayoutApp(App):
             self.notify(f"Error loading graph: {e}", severity="error")
         self._refresh_graph()
 
+    def _command_help(self) -> None:
+        print("Command 'help' called")
+        self.push_screen(HelpPopup())
+
     def _execute_command(self, cmd: str) -> None:
         if m := self.RE_ADD_EDGE.fullmatch(cmd):
             x, y, cost = m.group(1), m.group(2), int(m.group(3))
@@ -215,21 +244,18 @@ class LayoutApp(App):
             self._command_distance_vector(node)
         elif cmd == "show":
             self._command_show()
-            return
         elif cmd.startswith("export "):
             filename = cmd.split(" ", 1)[1]
             self._command_export(filename)
-            return
         elif cmd == "clear":
             self._command_clear()
-            return
         elif cmd.startswith("load "):
             filename = cmd.split(" ", 1)[1]
             self._command_load(filename)
-            return
-
-        # Warn in input
-        self.notify(f"Unrecognized command: {cmd}", severity="error")
+        elif cmd == "help":
+            self._command_help()
+        else:
+            self.notify(f"Unrecognized command: {cmd}", severity="error")
 
     def compose(self) -> ComposeResult:
         yield Header(id="Header")

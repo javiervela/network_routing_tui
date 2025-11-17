@@ -59,14 +59,16 @@ ToastRack {
     align: right top;
 }
 
-/* Center the modal contents on the screen */
-FilenamePopup {
+HelpPopup {
     align: center middle;
-    /* optional dim background behind dialog */
     background: $surface 60%;
 }
 
-/* The dialog box itself */
+FilenamePopup {
+    align: center middle;
+    background: $surface 60%;
+}
+
 #dialog {
     height: 13;
     width: 40;
@@ -76,8 +78,16 @@ FilenamePopup {
     content-align: center middle;
 }
 
-/* Make the input take the dialog width nicely */
 #dialog>Input {
     width: 100%;
     margin: 1 0;
+}
+
+#help_dialog {
+    height: 25;
+    width: 80;
+    padding: 1 2;
+    border: round $accent;
+    background: $panel;
+    content-align: center middle;
 }
