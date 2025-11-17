@@ -50,8 +50,12 @@ class LayoutApp(App):
     CSS_PATH = "layout.css"
 
     TITLE = "Network Routing"
-    # TODO better subtitle
     SUB_TITLE = "Interactive Network Topology — Routing Visualization"
+
+    self. = re.compile(r"([A-Z])\s+([A-Z])\s+(\d+)")
+    RE_REMOVE_EDGE = re.compile(r"([A-Z])\s+([A-Z])\s+-")
+    RE_LINK_STATE = re.compile(r"ls\s+([A-Z])")
+    RE_DISTANCE_VECTOR = re.compile(r"dv\s+([A-Z])")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -125,6 +129,30 @@ class LayoutApp(App):
 
         # TODO maybe other components
 
+    def _command_add_edge(self, x, y, cost) -> None:
+        self.graph.add_edge(x, y, cost)
+        self._refresh_graph()
+        self.notify(f"Edge {x} {y} with cost {cost} added/updated")
+
+    def _command_remove_edge(self, x, y) -> None:
+        self.graph.remove_edge(x, y)
+        self._refresh_graph()
+        self.notify(f"Edge {x} {y} removed")
+
+    def _command_link_state(self, node) -> None:
+        self.graph.link_state(node)
+        tabs = self.query_one(Tabs)
+        tabs.active = node
+        self._refresh_graph()
+        self.notify(f"Link-state algorithm executed for node {node}")
+
+    def _command_distance_vector(self, node) -> None:
+        self.graph.distance_vector()
+        tabs = self.query_one(Tabs)
+        tabs.active = node
+        self._refresh_graph()
+        self.notify(f"Distance-vector iteration executed for node {node}")
+
     def _command_show(self) -> None:
         print("Command 'show' called")
         if self.graph is None:
@@ -167,60 +195,29 @@ class LayoutApp(App):
         self._refresh_graph()
 
     def _execute_command(self, cmd: str) -> None:
-        # Edge add/update: "X Y cost"  (cost is integer)
-        m = re.fullmatch(r"([A-Z])\s+([A-Z])\s+(\d+)", cmd)
-        if m:
+        if m := self.RE_ADD_EDGE.fullmatch(cmd):
             x, y, cost = m.group(1), m.group(2), int(m.group(3))
-            print(f"Adding/updating edge {x} {y} with cost {cost}")
-            self.graph.add_edge(x, y, cost)
-            self._refresh_graph()
-            return
-
-        # Edge remove: "X Y -"
-        m = re.fullmatch(r"([A-Z])\s+([A-Z])\s+-", cmd)
-        if m:
+            self._command_add_edge(x, y, cost)
+        elif m := self.RE_REMOVE_EDGE.fullmatch(cmd):
             x, y = m.group(1), m.group(2)
-            print(f"Removing edge {x} {y}")
-            self.graph.remove_edge(x, y)
-            self._refresh_graph()
-            return
-
-        # Link-state: "ls X"
-        m = re.fullmatch(r"ls\s+([A-Z])", cmd)
-        if m:
+            self._command_remove_edge(x, y)
+        elif m := self.RE_LINK_STATE.fullmatch(cmd):
             node = m.group(1)
-            print(f"Link-state algorithm initiated for node {node}")
-            self.graph.link_state(node)
-            self._refresh_graph()
-            return
-
-        # Distance-vector iteration then show X: "dv X"
-        m = re.fullmatch(r"dv\s+([A-Z])", cmd)
-        if m:
+            self._command_link_state(node)
+        elif m := self.RE_DISTANCE_VECTOR.fullmatch(cmd):
             node = m.group(1)
-            print(f"Distance-vector iteration initiated for node {node}")
-            self.graph.distance_vector()
-            # TODO for 1 specific node: switch tab to it
-            # TODO check rest of implementation specs
-            self._refresh_graph()
-            return
-
-        # Convenience commands
-        if cmd == "clear":
+            self._command_distance_vector(node)
+        elif cmd == "clear":
             self._command_clear()
             return
-
-        if cmd == "show":
+        elif cmd == "show":
             self._command_show()
             return
-
-        if cmd.startswith("export "):
+        elif cmd.startswith("export "):
             filename = cmd.split(" ", 1)[1]
             self._command_export(filename)
             return
-
-        if cmd.startswith("load "):
-            # TODO implement and test
+        elif cmd.startswith("load "):
             filename = cmd.split(" ", 1)[1]
             self._command_load(filename)
             return
