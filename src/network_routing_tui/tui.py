@@ -32,15 +32,16 @@ class HelpPopup(ModalScreen):
 
 
 class FilenamePopup(ModalScreen[str | None]):
-    def __init__(self):
+    def __init__(self, default_value=None):
         super().__init__()
         self.filename: str | None = None
+        self.default_value = default_value
         print("FilenamePopup initialized")
 
     def compose(self):
         yield Vertical(
             Label("Enter filename:"),
-            Input(id="input"),
+            Input(id="input", value=self.default_value),
             Horizontal(
                 Button("OK", id="ok", variant="success"),
                 Button("Cancel", id="cancel", variant="error"),
@@ -62,6 +63,9 @@ class NetworkRoutingTUI(App):
 
     TITLE = "Network Routing"
     SUB_TITLE = "Interactive Network Topology — Routing Visualization"
+
+    LOAD_DEFAULT_VALUE = "./tests/graph.txt"
+    EXPORT_DEFAULT_VALUE = "./tests/test.txt"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -167,14 +171,16 @@ class NetworkRoutingTUI(App):
     @work
     async def _command_export(self, filename=None) -> None:
         if not filename:
-            filename = await self.push_screen_wait(FilenamePopup())
+            filename = await self.push_screen_wait(
+                FilenamePopup(default_value=self.EXPORT_DEFAULT_VALUE)
+            )
         if not filename:
             self.notify("Export cancelled", severity="warning")
             return
         if self.network_routing is None:
             return
         try:
-            self.network_routing.graph.save_file(filename)
+            self.network_routing.save(filename)
             self.notify(f"Graph exported successfully to {filename}")
         except Exception as e:
             self.notify(f"Error exporting graph: {e}", severity="error")
@@ -189,14 +195,16 @@ class NetworkRoutingTUI(App):
     @work
     async def _command_load(self, filename=None) -> None:
         if not filename:
-            filename = await self.push_screen_wait(FilenamePopup())
+            filename = await self.push_screen_wait(
+                FilenamePopup(default_value=self.LOAD_DEFAULT_VALUE)
+            )
         if not filename:
             self.notify("Load cancelled", severity="warning")
             return
         if self.network_routing is None:
             return
         try:
-            self.network_routing.graph.load_file(filename)
+            self.network_routing.load(filename)
             self.notify(f"Graph loaded successfully from {filename}")
         except Exception as e:
             self.notify(f"Error loading graph: {e}", severity="error")

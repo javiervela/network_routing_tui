@@ -65,6 +65,15 @@ class NetworkRouting:
     def clear(self):
         self.graph.clear()
 
+    def apply_input(self, inp):
+        # TODO do something about this method
+        inp = inp.split(" ")  # TODO Should be 3 values
+
+        if inp[2] == "-":
+            self.graph.remove_edge(inp[0], inp[1])
+        else:
+            self.graph.add_edge(inp[0], inp[1], weight=int(inp[2]))
+
     def load(self, filename):
         # TODO do something about this method
         with open(filename) as f:
@@ -73,19 +82,10 @@ class NetworkRouting:
                 self.apply_input(l)
                 l = f.readline()
 
-    def apply_input(self, inp):
-        # TODO do something about this method
-        inp = inp.split(" ")  # TODO Should be 3 values
-
-        if inp[2] == "-":
-            self.remove_edge(inp[0], inp[1])
-        else:
-            self.add_edge(inp[0], inp[1], weight=int(inp[2]))
-
-    def save_file(self, dest):
+    def save(self, dest):
         # TODO do something about this method
         with open(dest, "w", encoding="utf-8") as f:
-            for u, v, weight in self.edges.data("weight"):
+            for u, v, weight in self.graph.edges.data("weight"):
                 f.write(str(u) + " " + str(v) + " " + str(weight) + "\n")
 
     def parse_command(self, cmd):
