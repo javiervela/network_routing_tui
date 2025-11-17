@@ -18,10 +18,10 @@ class Graph(nx.Graph):
             error.warning("No edges to remove between " + u + " and " + v)
         # remove nodes if they have no remaining edges
         if self.degree(u) == 0:
-            print("Removing node " + u + " as it has no remaining edges.")
+            #print("Removing node " + u + " as it has no remaining edges.")
             self.remove_node(u)
         if self.degree(v) == 0:
-            print("Removing node " + v + " as it has no remaining edges.")
+            #print("Removing node " + v + " as it has no remaining edges.")
             self.remove_node(v)
 
     def add_edge(self, u, v, weight):
@@ -55,7 +55,7 @@ class Graph(nx.Graph):
             routes[n] = self.nodes[n]["routable"].copy()
 
         for n in self.nodes:
-            self.nodes[n]["routable"].remove_neighbors()
+            self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
                 self.nodes[n]["routable"].update_dv(routes[v], w, v, n)
