@@ -4,6 +4,15 @@ class RoutingTable:
         self.routes = {}   #routes[dest] = [via, distance]
         self.routes[n] = [n, 0]
 
+    def compare(self, rT):
+        for k in self.routes:
+            if k in rT.routes:
+                if self.get_distance(k) != rT.get_distance(k):
+                    return False
+            else:
+                return False
+        return True            
+
     def show(self):
         # TODO change show naming
         res = ""
@@ -46,18 +55,20 @@ class RoutingTable:
     def remove_route(self, n):
         self.routes.pop(n, None)
 
-    def remove_neighbors(self):
+    def remove_neighbors(self, neigh):
         for k in list(self.routes.keys()):
-            if self.routes[k][0] == k and k != self.id:
-                self.remove_route(k)
+            if (self.routes[k][0] == k or not self.routes[k][0] in neigh) and k != self.id:
+                self.remove_route(k) 
 
     def update_dv(self, routable, w, via, me):
+        for dest in list(self.routes.keys()): # If any of my routes go through via, we can remove them
+            if self.get_seq(dest) == via:
+                self.remove_route(dest)
+
         for dest in routable.get_routes():
             d = routable.get_distance(dest)
             if routable.get_seq(dest) == me: # This route goes through myself, I don't need to learn from it
-                continue 
-            if self.get_seq(dest) == via:
-                self.remove_route(dest)
+                continue
             self.add_route(dest, w + d, via)
 
     def get_table_as_list(self):
