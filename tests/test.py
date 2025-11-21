@@ -6,17 +6,30 @@ from network_routing_tui.graph_generator import gen_random, gen_damage
 
 
 if __name__ == "__main__":
-    G = gen_random()
+    G = Graph()
 
     #G.load_file("./tests/graph.txt")
     #G.save_file("./tests/randotron.txt")
-
-    gen_damage(G, 1)
+    G.apply_input("A B 1")
+    G.apply_input("C B 1")
+    G.apply_input("C D 1")
 
     rT = link_state(G,"A")
-    print(rT.show())
+    print(rT.show(),"\n----")
+    for i in range(10):
+        G.distance_vector_legacy()
+    print(G.get_routing_table("A").show(),"\n----")
     G.show()
 
+    G.apply_input("C B -")
+
+    for i in range(10):
+        G.distance_vector_legacy()
+    
+    print(G.get_routing_table("A").show())
+    G.show()
+    
+    """
     for i in range(100):
         G = gen_random(20)
         for i in range(5):
@@ -36,7 +49,7 @@ if __name__ == "__main__":
                     print("--------------")
                     print(G.get_routing_table(u).show())
                     G.show()
-    
+    """
     """
     for i in range(5):
         print("-------")

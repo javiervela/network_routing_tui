@@ -71,6 +71,15 @@ class RoutingTable:
                 continue
             self.add_route(dest, w + d, via)
 
+    def update_dv_legacy(self, routable, w, via, me):
+        for dest in list(self.routes.keys()): # If any of my routes go through via, we can remove them
+            if self.get_seq(dest) == via:
+                self.remove_route(dest)
+
+        for dest in routable.get_routes():
+            d = routable.get_distance(dest)
+            self.add_route(dest, w + d, via)
+
     def get_table_as_list(self):
         return [
             (node, next_hop[0], str(next_hop[1]))

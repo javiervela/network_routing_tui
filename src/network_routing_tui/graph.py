@@ -10,6 +10,26 @@ from network_routing_tui.link_state import link_state
 
 
 class Graph(nx.Graph):
+    
+    def apply_input(self, inp):
+        inp = inp.split(" ")  # Should be 3 values
+        if inp[2] == "-":
+            self.remove_edge(inp[0], inp[1])
+        else:
+            self.add_edge(inp[0], inp[1], weight=int(inp[2]))
+
+    def load_file(self, src):
+        with open(src) as f:
+            l = f.readline()
+            while l != "":
+                self.apply_input(l)
+                l = f.readline()
+
+    def save_file(self, dest):
+        with open(dest, "w", encoding="utf-8") as f:
+            for u, v, weight in self.edges.data("weight"):
+                f.write(str(u) + " " + str(v) + " " + str(weight) + "\n")
+
     def remove_edge(self, u, v):
         # remove edge if exists, else warn
         if self.has_edge(u, v):
@@ -56,6 +76,17 @@ class Graph(nx.Graph):
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
                 self.nodes[n]["routable"].update_dv(routes[v], w, v, n)
+
+    def distance_vector_legacy(self):
+        routes = {}
+        for n in self.nodes:
+            routes[n] = self.nodes[n]["routable"].copy()
+
+        for n in self.nodes:
+            self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
+            for v in self.neighbors(n):
+                w = self.get_edge_data(n, v, "weight")["weight"]
+                self.nodes[n]["routable"].update_dv_legacy(routes[v], w, v, n)
 
     def link_state(self, node):
         resR = link_state(self, node)
