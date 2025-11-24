@@ -3,13 +3,45 @@ import matplotlib.pyplot as plt
 from network_routing_tui.graph import Graph
 from network_routing_tui.link_state import link_state
 from network_routing_tui.graph_generator import gen_random, gen_damage
+from network_routing_tui.measurement import evaluate_routing
 
 
 if __name__ == "__main__":
     G = Graph()
 
-    #G.load_file("./tests/graph.txt")
+    G.load_file("./tests/graph.txt")
     #G.save_file("./tests/randotron.txt")
+
+    for i in range(10):
+        G.distance_vector()
+
+        d = evaluate_routing(G)
+        print("Total errors:", d)
+        if i == 5:
+            print("Damaging graph")
+            G = gen_damage(G, 2)
+
+    G.show()
+
+    print("------\nLegacy")
+    G = Graph()
+
+    G.load_file("./tests/graph.txt")
+    #G.save_file("./tests/randotron.txt")
+
+    for i in range(20):
+        G.distance_vector_legacy()
+
+        d = evaluate_routing(G)
+        print("Total errors:", d)
+        if i == 5:
+            print("Damaging graph")
+            G = gen_damage(G, 2)
+
+    G.show()
+
+    
+    """
     G.apply_input("A B 1")
     G.apply_input("C B 1")
     G.apply_input("C D 1")
@@ -28,7 +60,7 @@ if __name__ == "__main__":
     
     print(G.get_routing_table("A").show())
     G.show()
-    
+    """
     """
     for i in range(100):
         G = gen_random(20)

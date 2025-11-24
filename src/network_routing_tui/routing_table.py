@@ -5,6 +5,8 @@ class RoutingTable:
         self.routes[n] = [n, 0]
 
     def compare(self, rT):
+        if len(list(rT.routes.keys())) != len(list(self.routes.keys())):
+            return False
         for k in self.routes:
             if k in rT.routes:
                 if self.get_distance(k) != rT.get_distance(k):
@@ -41,7 +43,7 @@ class RoutingTable:
     def get_distance(self, n):
         if n in self.routes:
             return self.routes[n][1]
-        return -666
+        return -1
 
     def get_seq(self, n):
         if n in self.routes:

@@ -77,6 +77,22 @@ class Graph(nx.Graph):
                 w = self.get_edge_data(n, v, "weight")["weight"]
                 self.nodes[n]["routable"].update_dv(routes[v], w, v, n)
 
+    def send_msg(self, src, dest, rec_max = 200):
+        if src == dest:
+            return 0
+        if rec_max == 0:
+            return -1
+        rT = self.nodes[src]["routable"]
+        via = rT.get_seq(dest)
+        if via == "ERROR" or not self.has_edge(src, via):
+            return -1
+        
+        res = self.send_msg(via, dest, rec_max - 1)
+        if res == -1:
+            return -1
+        return res + self.get_edge_data(src, via, "weight")["weight"]
+        
+
     def distance_vector_legacy(self):
         routes = {}
         for n in self.nodes:
