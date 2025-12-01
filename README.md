@@ -21,7 +21,7 @@ This project implements adaptive network routing algorithms for CS513 Computer N
 
 ## Features
 
-### **Graph Management**
+### Graph Management
 
 * Add or update an edge with a cost
 * Remove edges (and automatically remove orphaned nodes)
@@ -29,7 +29,7 @@ This project implements adaptive network routing algorithms for CS513 Computer N
 * Save graphs to file
 * Clear the current graph
 
-### **Routing Algorithms**
+### Routing Algorithms
 
 * **Link-State (LS)**
   * Compute shortest paths from a chosen node
@@ -38,7 +38,7 @@ This project implements adaptive network routing algorithms for CS513 Computer N
   * Perform one global DV iteration per command
   * Routing tables evolve over successive iterations
 
-### **Interfaces**
+### Interfaces
 
 * **CLI mode** for scripted or manual interaction
 * **Full TUI mode** with:
@@ -97,7 +97,7 @@ The application can be run in either TUI or CLI mode.
 
 <!--  TODO run with `uv` or just python -->
 
-### **Run the TUI (default)**
+### Run the TUI (default)
 
 The TUI mode provides a full textual interface in the terminal with live graph visualization. This mode is useful for interactive exploration.
 
@@ -105,7 +105,7 @@ The TUI mode provides a full textual interface in the terminal with live graph v
 python -m network_routing_tui --tui
 ```
 
-### **Run the CLI**
+### Run the CLI
 
 The CLI mode provides a simple command-line interface for manual interaction.
 
@@ -113,7 +113,7 @@ The CLI mode provides a simple command-line interface for manual interaction.
 python -m network_routing_tui --cli
 ```
 
-### **Run the CLI with a script file**
+### Run the CLI with a script file
 
 Provide a text file with commands to execute sequentially. This mode is useful for testing and running reproducible experiments.
 
@@ -123,7 +123,13 @@ python -m network_routing_tui --cli --script commands.txt
 
 ---
 
-## **Basic Commands**
+## Logging
+
+You can set the log level for warnings and errors using the `--log-level` argument. Available levels are `ERROR`, `WARNING`, and `NONE`. The default is `WARNING`.
+
+---
+
+## Basic Commands
 
 The following commands are available in both TUI and CLI modes:
 

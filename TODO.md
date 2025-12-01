@@ -2,9 +2,9 @@
 | Filename | line # | TODO |
 |:------|:------:|:------|
 | [README.md](README.md#L98) | 98 | run with `uv` or just python |
-| [README.md](README.md#L293) | 293 | Write implementation details... |
-| [README.md](README.md#L294) | 294 | describe extreme cases |
-| [README.md](README.md#L295) | 295 | how to handle "if they cross each other" (?) |
+| [README.md](README.md#L299) | 299 | Write implementation details... |
+| [README.md](README.md#L300) | 300 | describe extreme cases |
+| [README.md](README.md#L301) | 301 | how to handle "if they cross each other" (?) |
 | [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L20) | 20 | duplicate code with NetworkRouting? |
 | [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L28) | 28 | duplicate code with NetworkRouting? |
 | [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L36) | 36 | duplicate code with NetworkRouting? |
