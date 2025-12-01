@@ -15,15 +15,23 @@ def main():
         metavar="FILE",
         help="Script file to pass to CLI (only with --cli)",
     )
+    parser.add_argument(
+        "--log-level",
+        metavar="LEVEL",
+        type=lambda s: s.upper(),
+        choices=("ERROR", "WARNING", "NONE"),
+        default="WARNING",
+        help="Set log level (ERROR, WARNING, or NONE). Case-insensitive. Default is WARNING.",
+    )
     args = parser.parse_args()
 
     if args.script and not args.cli:
         parser.error("--script can only be used with --cli")
 
     if args.cli:
-        NetworkRoutingCLI(script=args.script).run()
+        NetworkRoutingCLI(log_level=args.log_level, script=args.script).run()
     else:
-        NetworkRoutingTUI().run()
+        NetworkRoutingTUI(log_level=args.log_level).run()
 
 
 if __name__ == "__main__":

@@ -3,6 +3,10 @@ from enum import Enum
 
 from network_routing_tui.graph import Graph
 from network_routing_tui.routing_table import RoutingTable
+from network_routing_tui.exceptions import (
+    NodeDoesNotExistError,
+    CommandDoesNotExistError,
+)
 
 
 class NetworkRoutingCommand(Enum):
@@ -68,7 +72,9 @@ class NetworkRouting:
     def link_state(self, node):
         self.graph.link_state(node)
 
-    def distance_vector(self):
+    def distance_vector(self, node):
+        if not self.graph.has_node(node):
+            raise NodeDoesNotExistError(f"Node {node} does not exist in the graph.")
         self.graph.distance_vector()
 
     def show(self):
@@ -78,15 +84,14 @@ class NetworkRouting:
         self.graph.clear()
 
     def print_routing_table(self, node):
+        if not self.graph.has_node(node):
+            raise NodeDoesNotExistError(f"Node {node} does not exist in the graph.")
         rt = self.graph.get_routing_table(node)
-        if rt is None:
-            print(f"No routing table found for node {node}.")
-        else:
-            print(rt.show())
+        print(rt.show())
 
     def apply_input(self, inp):
-        # TODO do something about this method
-        inp = inp.split(" ")  # TODO Should be 3 values
+        # TODO Implement this method better
+        inp = inp.split(" ")  # TODO Check: Should be 3 values
 
         if inp[2] == "-":
             self.graph.remove_edge(inp[0], inp[1])
@@ -94,7 +99,7 @@ class NetworkRouting:
             self.graph.add_edge(inp[0], inp[1], weight=int(inp[2]))
 
     def load(self, filename):
-        # TODO do something about this method
+        # TODO Implement this method better
         with open(filename) as f:
             l = f.readline()
             while l != "":
@@ -102,7 +107,6 @@ class NetworkRouting:
                 l = f.readline()
 
     def save_graph(self, filename):
-        # TODO implement
         with open(filename, "w", encoding="utf-8") as f:
             for u, v, weight in self.graph.edges.data("weight"):
                 f.write(str(u) + " " + str(v) + " " + str(weight) + "\n")
@@ -149,12 +153,7 @@ class NetworkRouting:
         elif m := self.RE_QUIT.fullmatch(cmd):
             return (NetworkRoutingCommand.QUIT, ())
         else:
-            return (None, None)
+            raise CommandDoesNotExistError(f"Command '{cmd}' does not exist")
 
 
-# TODO save and load methods for graph and routing tables
 # TODO add file autocompletion
-
-
-# TODO check edge cases: adding existing edges, removing non-existing edges, or applying algorithms on non-existing nodes
-# TODO add warnings and errors: when the nodes do not exist from CLI or TUI

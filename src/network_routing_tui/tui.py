@@ -1,3 +1,5 @@
+import warnings
+
 from rich_pixels import Pixels
 from textual import on, work
 from textual.app import App, ComposeResult
@@ -16,6 +18,7 @@ from textual.widgets import (
 )
 
 from network_routing_tui.network_routing import NetworkRouting, NetworkRoutingCommand
+from network_routing_tui.exceptions import CommandDoesNotExistError
 
 
 class HelpPopup(ModalScreen):
@@ -67,9 +70,10 @@ class NetworkRoutingTUI(App):
     LOAD_DEFAULT_FILENAME = "./tests/graph.txt"
     SAVE_GRAPH_DEFAULT_FILENAME = "./tests/test.txt"
 
-    def __init__(self, **kwargs):
+    def __init__(self, log_level="WARNING", **kwargs):
         super().__init__(**kwargs)
         self.network_routing: NetworkRouting | None = None
+        self.log_level = log_level
         self.previous_tab_ids = []
 
     ###########################################################################
@@ -144,24 +148,24 @@ class NetworkRoutingTUI(App):
     ###########################################################################
 
     def _command_add_edge(self, x, y, cost) -> None:
-        self.network_routing.graph.add_edge(x, y, cost)
+        self.network_routing.add_edge(x, y, cost)
         self._refresh_graph()
         self.notify(f"Edge {x} {y} with cost {cost} added/updated")
 
     def _command_remove_edge(self, x, y) -> None:
-        self.network_routing.graph.remove_edge(x, y)
+        self.network_routing.remove_edge(x, y)
         self._refresh_graph()
         self.notify(f"Edge {x} {y} removed")
 
     def _command_link_state(self, node) -> None:
-        self.network_routing.graph.link_state(node)
+        self.network_routing.link_state(node)
         tabs = self.query_one(Tabs)
         tabs.active = node
         self._refresh_graph()
         self.notify(f"Link-state algorithm executed for node {node}")
 
     def _command_distance_vector(self, node) -> None:
-        self.network_routing.graph.distance_vector()
+        self.network_routing.distance_vector(node)
         tabs = self.query_one(Tabs)
         tabs.active = node
         self._refresh_graph()
@@ -169,7 +173,7 @@ class NetworkRoutingTUI(App):
 
     def _command_show(self) -> None:
         if self.network_routing is not None:
-            self.network_routing.graph.show()
+            self.network_routing.show()
 
     @work
     async def _command_save_graph(self, filename=None) -> None:
@@ -190,7 +194,9 @@ class NetworkRoutingTUI(App):
 
     @work
     async def _command_save_routing_table(self, node=None, filename=None) -> None:
-        # TODO how to ask for both node and filename?
+        # This method is only used through command, there is not a button for it yet
+        # Therefore, we assume node and filename are always provided and we do not need a popup to ask for them
+
         # if not filename:
         #     filename = await self.push_screen_wait(
         #         FilenamePopup(default_value=f"{node}_routing_table.txt")
@@ -212,7 +218,7 @@ class NetworkRoutingTUI(App):
     def _command_clear(self) -> None:
         if self.network_routing is None:
             return
-        self.network_routing.graph.clear()
+        self.network_routing.clear()
         self.notify("Graph cleared successfully")
         self._refresh_graph()
 
@@ -242,39 +248,49 @@ class NetworkRoutingTUI(App):
     ###########################################################################
 
     def _execute_command(self, cmd: str) -> None:
-        command, params = self.network_routing.parse_command(cmd)
-        if command == NetworkRoutingCommand.ADD_EDGE:
-            x, y, cost = params
-            self._command_add_edge(x, y, cost)
-        elif command == NetworkRoutingCommand.REMOVE_EDGE:
-            x, y = params
-            self._command_remove_edge(x, y)
-        elif command == NetworkRoutingCommand.LINK_STATE:
-            node = params
-            self._command_link_state(node)
-        elif command == NetworkRoutingCommand.DISTANCE_VECTOR:
-            node = params
-            self._command_distance_vector(node)
-        elif command == NetworkRoutingCommand.SHOW:
-            self._command_show()
-        elif command == NetworkRoutingCommand.SAVE_GRAPH:
-            (filename,) = params
-            self._command_save_graph(filename)
-        elif command == NetworkRoutingCommand.SAVE_ROUTING_TABLE:
-            (node, filename) = params
-            self._command_save_routing_table(node, filename)
-        # TODO implement print routing table command?
-        elif command == NetworkRoutingCommand.CLEAR:
-            self._command_clear()
-        elif command == NetworkRoutingCommand.LOAD:
-            (filename,) = params
-            self._command_load(filename)
-        elif command == NetworkRoutingCommand.HELP:
-            self._command_help()
-        elif command == NetworkRoutingCommand.QUIT:
-            self.exit()
-        elif command is None:
-            self.notify(f"Unrecognized command: {cmd}", severity="error")
+        try:
+            with warnings.catch_warnings(record=True) as caught:
+                command, params = self.network_routing.parse_command(cmd)
+                if command == NetworkRoutingCommand.ADD_EDGE:
+                    x, y, cost = params
+                    self._command_add_edge(x, y, cost)
+                elif command == NetworkRoutingCommand.REMOVE_EDGE:
+                    x, y = params
+                    self._command_remove_edge(x, y)
+                elif command == NetworkRoutingCommand.LINK_STATE:
+                    node = params
+                    self._command_link_state(node)
+                elif command == NetworkRoutingCommand.DISTANCE_VECTOR:
+                    node = params
+                    self._command_distance_vector(node)
+                elif command == NetworkRoutingCommand.SHOW:
+                    self._command_show()
+                elif command == NetworkRoutingCommand.SAVE_GRAPH:
+                    (filename,) = params
+                    self._command_save_graph(filename)
+                elif command == NetworkRoutingCommand.SAVE_ROUTING_TABLE:
+                    (node, filename) = params
+                    self._command_save_routing_table(node, filename)
+                # TODO implement print routing table command?
+                elif command == NetworkRoutingCommand.CLEAR:
+                    self._command_clear()
+                elif command == NetworkRoutingCommand.LOAD:
+                    (filename,) = params
+                    self._command_load(filename)
+                elif command == NetworkRoutingCommand.HELP:
+                    self._command_help()
+                elif command == NetworkRoutingCommand.QUIT:
+                    self.exit()
+
+                if self.log_level in ("WARNING",):
+                    for warning in caught:
+                        self.notify(
+                            f"Warning: {str(warning.message)}", severity="warning"
+                        )
+
+        except Exception as e:
+            if self.log_level in ("WARNING", "ERROR"):
+                self.notify(f"Error: {e}", severity="error")
 
     ###########################################################################
     # Helper Methods
