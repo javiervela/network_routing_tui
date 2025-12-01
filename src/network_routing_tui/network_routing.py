@@ -90,8 +90,8 @@ class NetworkRouting:
         print(rt.show())
 
     def apply_input(self, inp):
-        # TODO do something about this method
-        inp = inp.split(" ")  # TODO Should be 3 values
+        # TODO Implement this method better
+        inp = inp.split(" ")  # TODO Check: Should be 3 values
 
         if inp[2] == "-":
             self.graph.remove_edge(inp[0], inp[1])
@@ -99,7 +99,7 @@ class NetworkRouting:
             self.graph.add_edge(inp[0], inp[1], weight=int(inp[2]))
 
     def load(self, filename):
-        # TODO do something about this method
+        # TODO Implement this method better
         with open(filename) as f:
             l = f.readline()
             while l != "":
@@ -107,7 +107,6 @@ class NetworkRouting:
                 l = f.readline()
 
     def save_graph(self, filename):
-        # TODO implement
         with open(filename, "w", encoding="utf-8") as f:
             for u, v, weight in self.graph.edges.data("weight"):
                 f.write(str(u) + " " + str(v) + " " + str(weight) + "\n")
@@ -157,5 +156,4 @@ class NetworkRouting:
             raise CommandDoesNotExistError(f"Command '{cmd}' does not exist")
 
 
-# TODO save and load methods for graph and routing tables
 # TODO add file autocompletion

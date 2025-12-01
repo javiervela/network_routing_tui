@@ -17,7 +17,7 @@ from network_routing_tui.exceptions import (
 
 
 class Graph(nx.Graph):
-    # TODO duplicate code with NetworkRouting?
+    # REMOVE duplicate code with NetworkRouting? keep it for testing purposes
     def apply_input(self, inp):
         inp = inp.split(" ")  # Should be 3 values
         if inp[2] == "-":
@@ -25,7 +25,7 @@ class Graph(nx.Graph):
         else:
             self.add_edge(inp[0], inp[1], weight=int(inp[2]))
 
-    # TODO duplicate code with NetworkRouting?
+    # REMOVE duplicate code with NetworkRouting? keep it for testing purposes
     def load_file(self, src):
         with open(src) as f:
             l = f.readline()
@@ -33,7 +33,7 @@ class Graph(nx.Graph):
                 self.apply_input(l)
                 l = f.readline()
 
-    # TODO duplicate code with NetworkRouting?
+    # REMOVE duplicate code with NetworkRouting? keep it for testing purposes
     def save_file(self, dest):
         with open(dest, "w", encoding="utf-8") as f:
             for u, v, weight in self.edges.data("weight"):
@@ -103,7 +103,6 @@ class Graph(nx.Graph):
         return self.nodes[n]["routable"]
 
     def distance_vector(self):
-        # TODO our DV does not count-to-infinity ?????
         routes = {}
         for n in self.nodes:
             routes[n] = self.nodes[n]["routable"].copy()

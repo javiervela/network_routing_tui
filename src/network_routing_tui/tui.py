@@ -194,7 +194,9 @@ class NetworkRoutingTUI(App):
 
     @work
     async def _command_save_routing_table(self, node=None, filename=None) -> None:
-        # TODO how to ask for both node and filename?
+        # This method is only used through command, there is not a button for it yet
+        # Therefore, we assume node and filename are always provided and we do not need a popup to ask for them
+
         # if not filename:
         #     filename = await self.push_screen_wait(
         #         FilenamePopup(default_value=f"{node}_routing_table.txt")

@@ -5,22 +5,17 @@
 | [README.md](README.md#L299) | 299 | Write implementation details... |
 | [README.md](README.md#L300) | 300 | describe extreme cases |
 | [README.md](README.md#L301) | 301 | how to handle "if they cross each other" (?) |
-| [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L20) | 20 | duplicate code with NetworkRouting? |
-| [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L28) | 28 | duplicate code with NetworkRouting? |
-| [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L36) | 36 | duplicate code with NetworkRouting? |
-| [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L106) | 106 | our DV does not count-to-infinity ????? |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L93) | 93 | do something about this method |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L102) | 102 | do something about this method |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L110) | 110 | implement |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L160) | 160 | save and load methods for graph and routing tables |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L161) | 161 | add file autocompletion |
-| [src/network_routing_tui/routing_table.py](src/network_routing_tui/routing_table.py#L19) | 19 | change show naming |
+| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L93) | 93 | Implement this method better |
+| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L102) | 102 | Implement this method better |
+| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L159) | 159 | add file autocompletion |
 | [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L132) | 132 | implement save routing table button |
-| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L197) | 197 | how to ask for both node and filename? |
-| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L272) | 272 | implement print routing table command? |
+| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L274) | 274 | implement print routing table command? |
 
 ### REMOVEs
 | Filename | line # | REMOVE |
 |:------|:------:|:------|
+| [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L20) | 20 | duplicate code with NetworkRouting? keep it for testing purposes |
+| [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L28) | 28 | duplicate code with NetworkRouting? keep it for testing purposes |
+| [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L36) | 36 | duplicate code with NetworkRouting? keep it for testing purposes |
 | [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L43) | 43 | edge if exists, else warn |
 | [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L53) | 53 | nodes if they have no remaining edges |

@@ -16,7 +16,6 @@ class RoutingTable:
         return True
 
     def show(self):
-        # TODO change show naming
         res = ""
         l = []
         for r in self.routes:
