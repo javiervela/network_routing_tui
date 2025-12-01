@@ -35,6 +35,8 @@ class Graph(nx.Graph):
         if self.has_edge(u, v):
             super().remove_edge(u, v)
         else:
+            # TODO remove
+            # TODO handle this errors better using the TUI or CLI
             error.warning("No edges to remove between " + u + " and " + v)
         # remove nodes if they have no remaining edges
         if self.degree(u) == 0:
@@ -67,6 +69,7 @@ class Graph(nx.Graph):
         return self.nodes[n]["routable"]
 
     def distance_vector(self):
+        # TODO our DV does not count-to-infinity ?????
         routes = {}
         for n in self.nodes:
             routes[n] = self.nodes[n]["routable"].copy()

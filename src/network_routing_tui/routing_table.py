@@ -1,7 +1,7 @@
 class RoutingTable:
     def __init__(self, n):
         self.id = n
-        self.routes = {}   #routes[dest] = [via, distance]
+        self.routes = {}  # routes[dest] = [via, distance]
         self.routes[n] = [n, 0]
 
     def compare(self, rT):
@@ -13,7 +13,7 @@ class RoutingTable:
                     return False
             else:
                 return False
-        return True            
+        return True
 
     def show(self):
         # TODO change show naming

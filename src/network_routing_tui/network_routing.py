@@ -7,13 +7,13 @@ from network_routing_tui.routing_table import RoutingTable
 
 class NetworkRoutingCommand(Enum):
     ADD_EDGE = "add_edge"
-    REMOVE_EDGE = "remove-edge"
+    REMOVE_EDGE = "remove_edge"
     LINK_STATE = "link_state"
     DISTANCE_VECTOR = "distance_vector"
     SHOW = "show"
-    SAVE_GRAPH = "saveg"
-    SAVE_ROUTING_TABLE = "savert"
-    PRINT_ROUTING_TABLE = "print"
+    SAVE_GRAPH = "save_graph"
+    SAVE_ROUTING_TABLE = "save_routing_table"
+    PRINT_ROUTING_TABLE = "print_routing_table"
     CLEAR = "clear"
     LOAD = "load"
     HELP = "help"
@@ -36,18 +36,18 @@ class NetworkRouting:
 
     HELP_TEXT = (
         "Available commands:\n\n"
-        "ADD EDGE: 'X Y COST'                  - Add an edge (nodes X and Y) with COST.\n"
-        "REMOVE EDGE: 'X Y -'                  - Remove the edge between nodes X and Y.\n"
-        "LINK-STATE: 'ls X'                    - Execute the link-state algorithm for node X.\n"
-        "DISTANCE-VECTOR: 'dv X'               - Execute one iteration of the distance-vector algorithm.\n"
-        "SHOW: 'show'                          - Display the graph.\n"
-        "SAVE GRAPH: 'saveg FILENAME'          - Save the graph to a file named FILENAME.\n"
-        "SAVE ROUTING TABLE: 'savert FILENAME' - Save the routing table to a file named FILENAME.\n"
-        "PRINT ROUTING TABLE: 'print NODE'     - Print the routing table for node NODE.\n"
-        "CLEAR: 'clear'                        - Clear the graph.\n"
-        "LOAD: 'load FILENAME'                 - Load a graph from a file named FILENAME.\n"
-        "HELP: 'help'                          - Show this help message.\n"
-        "QUIT: 'quit' or 'exit'                - Exit the CLI.\n"
+        "ADD EDGE:            'X Y COST'        - Add an edge (nodes X and Y) with COST.\n"
+        "REMOVE EDGE:         'X Y -'           - Remove the edge between nodes X and Y.\n"
+        "LINK-STATE:          'ls X'            - Execute the link-state algorithm for node X.\n"
+        "DISTANCE-VECTOR:     'dv X'            - Execute one iteration of the distance-vector algorithm.\n"
+        "SHOW:                'show'            - Display the graph.\n"
+        "SAVE GRAPH:          'saveg FILENAME'  - Save the graph to a file named FILENAME.\n"
+        "SAVE ROUTING TABLE:  'savert FILENAME' - Save the routing table to a file named FILENAME.\n"
+        "PRINT ROUTING TABLE: 'print NODE'      - Print the routing table for node NODE.\n"
+        "CLEAR:               'clear'           - Clear the graph.\n"
+        "LOAD:                'load FILENAME'   - Load a graph from a file named FILENAME.\n"
+        "HELP:                'help'            - Show this help message.\n"
+        "QUIT:                'quit' or 'exit'  - Exit the CLI.\n"
     )
 
     def __init__(self):
@@ -68,7 +68,7 @@ class NetworkRouting:
     def link_state(self, node):
         self.graph.link_state(node)
 
-    def distance_vector(self, node):
+    def distance_vector(self):
         self.graph.distance_vector()
 
     def show(self):
@@ -153,5 +153,8 @@ class NetworkRouting:
 
 
 # TODO save and load methods for graph and routing tables
-# TODO add warnings and errors
 # TODO add file autocompletion
+
+
+# TODO check edge cases: adding existing edges, removing non-existing edges, or applying algorithms on non-existing nodes
+# TODO add warnings and errors: when the nodes do not exist from CLI or TUI
