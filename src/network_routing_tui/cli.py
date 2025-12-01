@@ -39,9 +39,11 @@ class NetworkRoutingCLI:
         elif command == NetworkRoutingCommand.LINK_STATE:
             node = params
             self.network_routing.link_state(node)
+            self.network_routing.print_routing_table(node)
         elif command == NetworkRoutingCommand.DISTANCE_VECTOR:
             node = params
-            self.network_routing.distance_vector(node)
+            self.network_routing.distance_vector()
+            self.network_routing.print_routing_table(node)
         elif command == NetworkRoutingCommand.SHOW:
             self.network_routing.show()
         elif command == NetworkRoutingCommand.SAVE_GRAPH:
