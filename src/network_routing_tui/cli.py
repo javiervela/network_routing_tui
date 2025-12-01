@@ -4,8 +4,9 @@ from network_routing_tui.network_routing import NetworkRouting, NetworkRoutingCo
 
 
 class NetworkRoutingCLI:
-    def __init__(self, script=None):
+    def __init__(self, log_level="WARNING", script=None):
         self.network_routing = NetworkRouting()
+        self.log_level = log_level
         self.script = script
 
     def print_help(self):
@@ -68,9 +69,10 @@ class NetworkRoutingCLI:
                     self.print_help()
                 elif command == NetworkRoutingCommand.QUIT:
                     exit(0)
-                elif command is None:
-                    print(f"Error: Command '{cmd}' does not exist")
-                for warning in caught:
-                    print(f"Warning: {warning.message}")
+
+                if self.log_level in ("WARNING",):
+                    for warning in caught:
+                        print(f"Warning: {warning.message}")
         except Exception as e:
-            print(f"Error: {e}")
+            if self.log_level in ("WARNING", "ERROR"):
+                print(f"Error: {e}")

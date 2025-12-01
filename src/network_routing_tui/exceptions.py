@@ -26,3 +26,9 @@ class RemovingEdgeWarning(Warning):
     """Warning raised when removing an edge that does not have any remaining edges."""
 
     pass
+
+
+class CommandDoesNotExistError(Exception):
+    """Exception raised when a command does not exist."""
+
+    pass

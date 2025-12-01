@@ -18,6 +18,7 @@ from textual.widgets import (
 )
 
 from network_routing_tui.network_routing import NetworkRouting, NetworkRoutingCommand
+from network_routing_tui.exceptions import CommandDoesNotExistError
 
 
 class HelpPopup(ModalScreen):
@@ -69,9 +70,10 @@ class NetworkRoutingTUI(App):
     LOAD_DEFAULT_FILENAME = "./tests/graph.txt"
     SAVE_GRAPH_DEFAULT_FILENAME = "./tests/test.txt"
 
-    def __init__(self, **kwargs):
+    def __init__(self, log_level="WARNING", **kwargs):
         super().__init__(**kwargs)
         self.network_routing: NetworkRouting | None = None
+        self.log_level = log_level
         self.previous_tab_ids = []
 
     ###########################################################################
@@ -277,16 +279,16 @@ class NetworkRoutingTUI(App):
                     self._command_help()
                 elif command == NetworkRoutingCommand.QUIT:
                     self.exit()
-                elif command is None:
-                    self.notify(
-                        f"Error: Command '{cmd}' does not exist", severity="error"
-                    )
 
-                for warning in caught:
-                    self.notify(f"Warning: {str(warning.message)}", severity="warning")
+                if self.log_level in ("WARNING",):
+                    for warning in caught:
+                        self.notify(
+                            f"Warning: {str(warning.message)}", severity="warning"
+                        )
 
         except Exception as e:
-            self.notify(f"Error: {e}", severity="error")
+            if self.log_level in ("WARNING", "ERROR"):
+                self.notify(f"Error: {e}", severity="error")
 
     ###########################################################################
     # Helper Methods

@@ -3,7 +3,10 @@ from enum import Enum
 
 from network_routing_tui.graph import Graph
 from network_routing_tui.routing_table import RoutingTable
-from network_routing_tui.exceptions import NodeDoesNotExistError
+from network_routing_tui.exceptions import (
+    NodeDoesNotExistError,
+    CommandDoesNotExistError,
+)
 
 
 class NetworkRoutingCommand(Enum):
@@ -151,7 +154,7 @@ class NetworkRouting:
         elif m := self.RE_QUIT.fullmatch(cmd):
             return (NetworkRoutingCommand.QUIT, ())
         else:
-            return (None, None)
+            raise CommandDoesNotExistError(f"Command '{cmd}' does not exist")
 
 
 # TODO save and load methods for graph and routing tables

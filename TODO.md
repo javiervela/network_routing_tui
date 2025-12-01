@@ -9,15 +9,15 @@
 | [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L28) | 28 | duplicate code with NetworkRouting? |
 | [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L36) | 36 | duplicate code with NetworkRouting? |
 | [src/network_routing_tui/graph.py](src/network_routing_tui/graph.py#L106) | 106 | our DV does not count-to-infinity ????? |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L90) | 90 | do something about this method |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L99) | 99 | do something about this method |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L107) | 107 | implement |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L157) | 157 | save and load methods for graph and routing tables |
-| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L158) | 158 | add file autocompletion |
+| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L93) | 93 | do something about this method |
+| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L102) | 102 | do something about this method |
+| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L110) | 110 | implement |
+| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L160) | 160 | save and load methods for graph and routing tables |
+| [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L161) | 161 | add file autocompletion |
 | [src/network_routing_tui/routing_table.py](src/network_routing_tui/routing_table.py#L19) | 19 | change show naming |
-| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L130) | 130 | implement save routing table button |
-| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L195) | 195 | how to ask for both node and filename? |
-| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L270) | 270 | implement print routing table command? |
+| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L132) | 132 | implement save routing table button |
+| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L197) | 197 | how to ask for both node and filename? |
+| [src/network_routing_tui/tui.py](src/network_routing_tui/tui.py#L272) | 272 | implement print routing table command? |
 
 ### REMOVEs
 | Filename | line # | REMOVE |
