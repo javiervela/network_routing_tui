@@ -9,8 +9,9 @@ from network_routing_tui.measurement import evaluate_routing
 if __name__ == "__main__":
     G = Graph()
 
-    G.load_file("./tests/graph.txt")
+    #G.load_file("./tests/graph.txt")
     #G.save_file("./tests/randotron.txt")
+    G.apply_input("A B 10")
 
     for i in range(10):
         G.distance_vector()

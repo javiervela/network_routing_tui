@@ -5,6 +5,8 @@
 \usepackage[table]{xcolor}
 \usepackage{booktabs}
 \usepackage{chngpage}
+\usepackage{amsfonts}
+ \usepackage{mathtools}
 \usepackage[left=0.5cm,top=3cm,right=0.5cm,bottom=3cm,bindingoffset=0.5cm]{geometry}
 
 \title{Final Project: Routing Algorithms}
@@ -28,5 +30,42 @@ When receiving a table from a neighbour, a node uses it to update its own table.
 In the classical distance vector algorithm, that we call legacy in this report,  tables sent only contains a destination and a distance for each routes. This can create "counting to infinity" issues. In this work we will compare this legacy version with our own variation that includes destination, distance and via for each route. This allows us to ignore that goes through ourselves. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and don't need this information. Taking it into account runs the risk of propagating wrong information. \\
 
 We implemented both methods and compared them to get an idea of the usefulness of such a failsafe.
+
+\subsection{Measuring errors}
+
+In this report we measure the errors in routing tables when using the dv algorithm compared to ls. We want to know in how many iterations of dv the routing table reaches an accurate result. \\
+
+There are several ways of measuring the difference between the ideal routing table from ls with the routing table from dv at step $t$. Let us describe the various metrics used and their pros and cons. But first, here are some useful notations.\\
+
+Let us note:
+\begin{itemize}
+	\item $G$ the graph
+	\item $A$, $B$, $C$... nodes in graph $G$
+	\item $d_{ls}(A,B)$ the distance between A and B as given by the link state algorithm
+	\item $d_{t}(A,B)$ with $t \in \mathbb{N}$ the distance between A and B in the routing table of A after $t$ iterations. \\
+\end{itemize}
+
+A naïve way to measure the error would be to do this :\\
+
+$naiveError_{t} = \sum_{A \in G} \sum_{B \in G} |d_{ls}(A,B) - d_{t}(A,B)|$ \\
+
+This, however, presents some problems. Firstly, it is ill defined for cases where $A$ and $B$ are not connected or when the dv routing table doesn't know how to reach $B$ even though a route exists. We can imagine another version: \\
+
+$numberErrors_{t} = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), d_{t}(A,B)}$ with  $\delta_{a,b}  = \begin{cases*}
+                    1 & if  $a = b$  \\
+                    0 & otherwise
+                 \end{cases*}$ \\
+
+This would count exactly the number of routes for which the dv table has a different distance from the ideal route. \\
+
+While this is an appropriate measure, it doesn't help in cases where the routing table knows of the correct distance but the route itself doesn't match. For this we have to introduce a new notation:
+
+$msg_t(A,B)$ is the time it takes a message to go from $A$ to $B$ following the routes given by the dv algorithm at step $t$. \\
+
+Due to the nature of this measure, it can only be computed when all nodes in the graph have a routing table computed by dv. Some messages may never reach their destination, either because they reach a node that doesn't know how to reach said destination or because it gets stuck in an infinite loop between two nodes (for this specific case we implemented a hop limit). It allows us imagine this error metric: \\
+
+$msgError_t = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), msg_{t}(A,B)}$ \\
+
+This metric is still not perfect, an error in one routing table can cause a lot of messages to be lost and make the error measurement increase by a lot. We argue that it is a good metric for real world scenarios. 
 
 \end{document}
