@@ -1,7 +1,7 @@
 class RoutingTable:
     def __init__(self, n):
         self.id = n
-        self.routes = {}   #routes[dest] = [via, distance]
+        self.routes = {}  # routes[dest] = [via, distance]
         self.routes[n] = [n, 0]
 
     def compare(self, rT):
@@ -11,7 +11,7 @@ class RoutingTable:
                     return False
             else:
                 return False
-        return True            
+        return True
 
     def show(self):
         # TODO change show naming
@@ -49,7 +49,7 @@ class RoutingTable:
         return "ERROR"
 
     def add_route(self, n, w, via):
-        if not n in self.routes or w < self.get_distance(n):
+        if n not in self.routes or w < self.get_distance(n):
             self.routes[n] = [via, w]
 
     def remove_route(self, n):
@@ -57,17 +57,21 @@ class RoutingTable:
 
     def remove_neighbors(self, neigh):
         for k in list(self.routes.keys()):
-            if (self.routes[k][0] == k or not self.routes[k][0] in neigh) and k != self.id:
-                self.remove_route(k) 
+            if (
+                self.routes[k][0] == k or self.routes[k][0] not in neigh
+            ) and k != self.id:
+                self.remove_route(k)
 
     def update_dv(self, routable, w, via, me):
-        for dest in list(self.routes.keys()): # If any of my routes go through via, we can remove them
+        # If any of my routes go through via, we can remove them
+        for dest in list(self.routes.keys()):
             if self.get_seq(dest) == via:
                 self.remove_route(dest)
 
         for dest in routable.get_routes():
             d = routable.get_distance(dest)
-            if routable.get_seq(dest) == me: # This route goes through myself, I don't need to learn from it
+            # This route goes through myself, I don't need to learn from it
+            if routable.get_seq(dest) == me:
                 continue
             self.add_route(dest, w + d, via)
 
