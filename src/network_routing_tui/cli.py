@@ -66,3 +66,7 @@ class NetworkRoutingCLI:
             exit(0)
         elif command is None:
             print(f"Unrecognized command: {cmd}\n")
+
+
+# TODO fail if file not found
+# TODO raise errors from network_routing and catch here to print user-friendly messages

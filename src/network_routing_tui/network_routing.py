@@ -153,5 +153,8 @@ class NetworkRouting:
 
 
 # TODO save and load methods for graph and routing tables
-# TODO add warnings and errors
 # TODO add file autocompletion
+
+
+# TODO check edge cases: adding existing edges, removing non-existing edges, or applying algorithms on non-existing nodes
+# TODO add warnings and errors: when the nodes do not exist from CLI or TUI
