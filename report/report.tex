@@ -1,0 +1,32 @@
+\documentclass{article}
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{chngpage}
+\usepackage[left=0.5cm,top=3cm,right=0.5cm,bottom=3cm,bindingoffset=0.5cm]{geometry}
+
+\title{Final Project: Routing Algorithms}
+\author{Javier Vela, Automne Petitjean}
+\begin{document}
+\maketitle
+
+\section{Technical specifications}
+
+\subsection{Algorithms used}
+In this project, we compare two different algorithms: the distance vector algorithm and the link state algorithm. The link state algorithm is a simple graph traversal that looks at all the possible routes from one specific node. \\
+
+The distance vector algorithm is run step by step. During one step, each node sends its current routing tables to all its neighbours. To simulate this sending process, we save a copy of all the routing tables at time $t$. Then this copy is given to each neighbour and used to build the new routing table at time $t+1$. \\
+
+The new table for $A$ at $t+1$ is built by creating a table with only one route: the route to $A$ with a distance of 0. It is then updated by the received tables from all neighbours. In our experiment, all tables are sent and received simultaneously. In a context where tables arrive irregularly, we would need to remove only the routes going through $B$ when receiving a table from $B$. We would also need to remove routes going through neighbours when we detect that we're not connected to them anymore. \\
+
+When receiving a table from a neighbour, a node uses it to update its own table. Let's call $A$ the receiving node and $B$ the sender. $A$ compares each route in the $B$ table (to which the distance from $A$ to $B$ has been added) with the routes it already knows and keep the shortest option. \\ 
+
+\subsubsection{Legacy distance vector vs our distance vector}
+
+In the classical distance vector algorithm, that we call legacy in this report,  tables sent only contains a destination and a distance for each routes. This can create "counting to infinity" issues. In this work we will compare this legacy version with our own variation that includes destination, distance and via for each route. This allows us to ignore that goes through ourselves. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and don't need this information. Taking it into account runs the risk of propagating wrong information. \\
+
+We implemented both methods and compared them to get an idea of the usefulness of such a failsafe.
+
+\end{document}

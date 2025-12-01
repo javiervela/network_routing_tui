@@ -62,24 +62,15 @@ class RoutingTable:
             if (self.routes[k][0] == k or not self.routes[k][0] in neigh) and k != self.id:
                 self.remove_route(k) 
 
-    def update_dv(self, routable, w, via, me):
-        for dest in list(self.routes.keys()): # If any of my routes go through via, we can remove them
-            if self.get_seq(dest) == via:
-                self.remove_route(dest)
+    def update_dv(self, routable, w, via, me, legacy = False):
+        #for dest in list(self.routes.keys()): # If any of my routes go through via, we can remove them
+        #    if self.get_seq(dest) == via:
+        #        self.remove_route(dest)
 
         for dest in routable.get_routes():
             d = routable.get_distance(dest)
-            if routable.get_seq(dest) == me: # This route goes through myself, I don't need to learn from it
+            if routable.get_seq(dest) == me and not legacy: # This route goes through myself, I don't need to learn from it
                 continue
-            self.add_route(dest, w + d, via)
-
-    def update_dv_legacy(self, routable, w, via, me):
-        for dest in list(self.routes.keys()): # If any of my routes go through via, we can remove them
-            if self.get_seq(dest) == via:
-                self.remove_route(dest)
-
-        for dest in routable.get_routes():
-            d = routable.get_distance(dest)
             self.add_route(dest, w + d, via)
 
     def get_table_as_list(self):

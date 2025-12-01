@@ -72,7 +72,8 @@ class Graph(nx.Graph):
             routes[n] = self.nodes[n]["routable"].copy()
 
         for n in self.nodes:
-            self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
+            self.nodes[n]["routable"] = RoutingTable(n)
+            #self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
                 self.nodes[n]["routable"].update_dv(routes[v], w, v, n)
@@ -99,10 +100,11 @@ class Graph(nx.Graph):
             routes[n] = self.nodes[n]["routable"].copy()
 
         for n in self.nodes:
-            self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
+            self.nodes[n]["routable"] = RoutingTable(n)
+            #self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
-                self.nodes[n]["routable"].update_dv_legacy(routes[v], w, v, n)
+                self.nodes[n]["routable"].update_dv(routes[v], w, v, n, True)
 
     def link_state(self, node):
         resR = link_state(self, node)
