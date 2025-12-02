@@ -66,6 +66,6 @@ Due to the nature of this measure, it can only be computed when all nodes in the
 
 $msgError_t = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), msg_{t}(A,B)}$ \\
 
-This metric is still not perfect, an error in one routing table can cause a lot of messages to be lost and make the error measurement increase by a lot. We argue that it is a good metric for real world scenarios. 
+This metric is still not perfect, an error in one routing table can cause a lot of messages to be lost and make the error measurement increase by a lot. We argue that it is a good metric as it is close real world expectations of routing tables. A message cannot reach the destination in less time than the link state algorithm route, each error means that a message took longer to reach the destination. We can also measure only the message that failed to reach their destination. Sending a message through a non-efficient route is less of an issue than being unable to reach the destination at all even though a route exists.
 
 \end{document}

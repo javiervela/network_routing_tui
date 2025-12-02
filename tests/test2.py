@@ -8,17 +8,17 @@ from network_routing_tui.measurement import evaluate_routing
 
 def test_graph(d_weight = 50, steps = 500):
     G = Graph()
-    G.load_file("./tests/triangle.txt")
+    G.load_file("./tests/devious_triangle.txt")
 
     for i in range(10):
-        G.distance_vector()
+        G.distance_vector_legacy()
 
     G.apply_input("D C -")
     G.apply_input("A D " + str(d_weight))
 
     l = []
     for i in range(steps):
-        G.distance_vector()
+        G.distance_vector_legacy()
         d = evaluate_routing(G)
         l.append(d)
     return l
