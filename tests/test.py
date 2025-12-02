@@ -12,18 +12,55 @@ if __name__ == "__main__":
     #G.load_file("./tests/graph.txt")
     #G.save_file("./tests/randotron.txt")
     G.apply_input("A B 10")
+    G.apply_input("A C 10")
+    G.apply_input("C B 1")
+    G.apply_input("A D 10")
+    G.apply_input("C D 1")
+    
+    G.save_file("./tests/triangle.txt")
 
     for i in range(10):
         G.distance_vector()
 
         d = evaluate_routing(G)
         print("Total errors:", d)
-        if i == 5:
-            print("Damaging graph")
-            G = gen_damage(G, 2)
+
+    
+    G.show()
+    print(G.get_routing_table("A").show(),"\n----")
+
+    G.apply_input("D C -")
+    G.apply_input("A D 50")
+
+    for i in range(500):
+        G.distance_vector()
+        d = evaluate_routing(G)
+        print("Total errors:", d)
+    print("A")
+    print(G.get_routing_table("A").show(),"\n----")
+    print("B")
+    print(G.get_routing_table("B").show(),"\n----")
+    print("C")
+    print(G.get_routing_table("C").show(),"\n----")
+    print("D")
+    print(G.get_routing_table("D").show(),"\n----")
+    G.distance_vector()
+    print("\n\nA")
+    print(G.get_routing_table("A").show(),"\n----")
+    print("B")
+    print(G.get_routing_table("B").show(),"\n----")
+    print("C")
+    print(G.get_routing_table("C").show(),"\n----")
+    print("D")
+    print(G.get_routing_table("D").show(),"\n----")
+
+    d = G.send_msg("B", "D")
+    print("Reached in",d)
 
     G.show()
+        
 
+    """
     print("------\nLegacy")
     G = Graph()
 
@@ -41,7 +78,7 @@ if __name__ == "__main__":
 
     G.show()
 
-    
+    """
     """
     G.apply_input("A B 1")
     G.apply_input("C B 1")
