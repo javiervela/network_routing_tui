@@ -11,17 +11,21 @@ def test_graph(d_weight = 50, steps = 500):
     G.load_file("./tests/devious_triangle.txt")
 
     for i in range(10):
-        G.distance_vector_legacy()
+        G.distance_vector()
 
     G.apply_input("D C -")
     G.apply_input("A D " + str(d_weight))
 
     l = []
     for i in range(steps):
-        G.distance_vector_legacy()
+        G.distance_vector()
         d = evaluate_routing(G)
         l.append(d)
     return l
+
+G = Graph()
+G.load_file("./tests/devious_triangle.txt")
+G.show()
 
 for i in range(4):
     x = np.arange(500)

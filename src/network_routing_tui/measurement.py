@@ -11,3 +11,13 @@ def evaluate_routing(G):
             if d != gT.get_distance(v):
                 error += 1
     return error
+
+def evaluate_table_distance(G):
+    error = 0
+    for u in G.nodes():
+        gT = G.get_routing_table(u)
+        for v in G.nodes():
+            d = G.send_msg(u,v)
+            if d != gT.get_distance(v):
+                error += 1
+    return error
