@@ -21,3 +21,20 @@ def evaluate_table_distance(G):
             if d != gT.get_distance(v):
                 error += 1
     return error
+
+def evaluate_convergence(G, legacy = False, convergence_limit = 1000):
+    """ This function modifies G, be careful !!!"""
+    d = evaluate_routing(G)
+    i = 0
+    while d != 0:
+        G.distance_vector(legacy)
+        d = evaluate_routing(G)
+        i += 1
+        if i > convergence_limit:
+            return -1
+    return i        
+
+
+
+
+

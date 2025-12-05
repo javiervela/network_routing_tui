@@ -102,7 +102,7 @@ class Graph(nx.Graph):
             return None
         return self.nodes[n]["routable"]
 
-    def distance_vector(self):
+    def distance_vector(self, legacy = False):
         routes = {}
         for n in self.nodes:
             routes[n] = self.nodes[n]["routable"].copy()
@@ -112,7 +112,7 @@ class Graph(nx.Graph):
             # self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
-                self.nodes[n]["routable"].update_dv(routes[v], w, v, n)
+                self.nodes[n]["routable"].update_dv(routes[v], w, v, n, legacy)
 
     def send_msg(self, src, dest, rec_max=200):
         """
