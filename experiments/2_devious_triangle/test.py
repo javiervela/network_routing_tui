@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from network_routing_tui.graph import Graph
-from network_routing_tui.link_state import link_state
-from network_routing_tui.graph_generator import gen_random, gen_damage
 from network_routing_tui.measurement import evaluate_routing
 
-def test_graph(d_weight = 50, steps = 500):
-    G = Graph()
-    G.load_file("./tests/devious_triangle.txt")
+EXPERIMENT_DIR = "./experiments/2_devious_triangle/"
 
+
+def test_graph(d_weight=50, steps=500):
+    G = Graph()
+    G.load_file(f"{EXPERIMENT_DIR}/devious_triangle.txt")
     for i in range(10):
         G.distance_vector()
 
@@ -23,13 +23,17 @@ def test_graph(d_weight = 50, steps = 500):
         l.append(d)
     return l
 
-G = Graph()
-G.load_file("./tests/devious_triangle.txt")
-G.show()
 
-for i in range(4):
+G = Graph()
+G.load_file(f"{EXPERIMENT_DIR}/devious_triangle.txt")
+G.draw()
+plt.savefig(f"{EXPERIMENT_DIR}/initial_graph.png")
+plt.close()
+
+DISTANCES = [50, 100, 200, 400]
+for i, d_weight in enumerate(DISTANCES):
     x = np.arange(500)
-    y = test_graph([50,100,200,400][i])
-    plt.subplot(2,2,i + 1)
-    plt.plot(x,y)
+    y = test_graph(d_weight)
+    plt.subplot(2, 2, i + 1)
+    plt.plot(x, y)
 plt.show()
