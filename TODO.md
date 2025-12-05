@@ -5,6 +5,8 @@
 | [README.md](README.md#L311) | 311 | Write implementation details... |
 | [README.md](README.md#L312) | 312 | describe extreme cases |
 | [README.md](README.md#L313) | 313 | how to handle "if they cross each other" (?) |
+| [experiments/3a_dv_enhanced_performance/test.py](experiments/3a_dv_enhanced_performance/test.py#L26) | 26 | good event |
+| [experiments/3a_dv_enhanced_performance/test.py](experiments/3a_dv_enhanced_performance/test.py#L28) | 28 | bad event |
 | [report/report.tex](report/report.tex#L145) | 145 | check bellow before closing report |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L93) | 93 | Implement this method better |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L102) | 102 | Implement this method better |
