@@ -5,3 +5,6 @@ __pycache__/
 .venv
 
 .vscode/
+
+# Report
+report/report.synctex.gz

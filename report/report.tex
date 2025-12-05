@@ -1,5 +1,17 @@
 \documentclass{article}
+% \documentclass[10pt]{article}
 
+\usepackage[utf8]{inputenc}
+% \usepackage[spanish]{babel}
+% \usepackage{fontspec}
+
+% Packages for formatting
+% \usepackage{indentfirst}
+
+% Packages for math and proofs
+\usepackage{amsmath, amssymb, amsthm}
+
+% Packages for code formatting
 \usepackage{listings}
 \usepackage{color}
 \usepackage[table]{xcolor}
@@ -7,27 +19,198 @@
 \usepackage{chngpage}
 \usepackage{amsfonts}
  \usepackage{mathtools}
-\usepackage[left=0.5cm,top=3cm,right=0.5cm,bottom=3cm,bindingoffset=0.5cm]{geometry}
 
-\title{Final Project: Routing Algorithms}
-\author{Javier Vela, Automne Petitjean}
+% Packages for graphics and images
+\usepackage{graphicx, eso-pic}
+\usepackage{float}
+
+% Packages for hyperlinks and document references
+\usepackage{hyperref}
+
+% Packages for colors
+\usepackage{xcolor}
+
+% Package for modifying titles
+% \usepackage{titling}
+
+% Packages for tables
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+% Package for headers and footers
+\usepackage{fancyhdr}
+
+% Package for setting page margins
+% \usepackage[a4paper, margin=1in]{geometry}
+
+% Package for customizing lists
+\usepackage{enumitem}
+
+% Package for URLs
+\usepackage{url}
+
+% Package for page size
+\usepackage[letterpaper, margin=1in]{geometry}
+
+% Package for line spacing
+\usepackage{setspace}
+\setstretch{1.2}
+
+\usepackage{titlesec}
+
+% inhibit page breaks in the middle of paragraphs
+\widowpenalties 1 10000
+\raggedbottom
+
+% Define colors for code formatting
+\definecolor{codebg}{rgb}{0.95,0.95,0.95}
+\definecolor{codeborder}{rgb}{0.8,0.8,0.8}
+
+% Listings settings for code formatting
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{codeborder},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    xleftmargin=15pt,
+    framexleftmargin=15pt,
+    captionpos=b, % Position the caption below the listing
+    keywordstyle=\color{blue}, % Color the keywords
+    commentstyle=\color{green!60!black}, % Color the comments
+    stringstyle=\color{red}, % Color the strings
+}
+
+
+% Custom parameters
+\newcommand{\assignmentname}{Final Project: Routing Algorithms}
+\newcommand{\subjectname}{CS513: Computer Networks}
+\newcommand{\titletext}{\assignmentname}
+
+\newcommand{\studentone}{Automne Petitjean}
+\newcommand{\studentoneemail}{mpetitjean@wpi.edu}
+\newcommand{\studenttwo}{Javier Vela Tambo}
+\newcommand{\studenttwoemail}{jvela@wpi.edu}
+
+\author{\studentone \\ \texttt{\studentoneemail} \and \studenttwo \\ \texttt{\studenttwoemail}}
+
+% \newcommand{\submissiondate}{\today}
+\date{\today}
+
+\newcommand{\logo}{logo/wpi.png}
+\newcommand{\logoheader}{logo/wpi_header.png}
+
+\title{
+    \vspace{0.5cm}
+    \titletext \\
+    \vspace{0.35cm}
+    \large \subjectname
+}
+
+% Title formatting
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+
+% Add pictures after the title, in the foreground
+\AddToShipoutPictureFG*{
+    \AtPageUpperLeft{
+        \hspace*{\dimexpr\oddsidemargin + \hoffset + 1.5in\relax}
+        \raisebox{\dimexpr-\height-2\baselineskip}{
+            \makebox[0pt]{\includegraphics[width=5cm]{\logo}}}}
+    % 2nd picture on the right
+    % \AtPageUpperLeft{
+    %     \hspace*{\dimexpr\oddsidemargin + \textwidth + \hoffset + 1.5in - 5cm\relax}
+    %     \raisebox{\dimexpr-\height-2\baselineskip}{
+    %         \makebox[0pt]{\includegraphics[width=5cm]{\logo}}}}
+}
+
+% Header setup
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\includegraphics[height=0.5cm]{\logoheader}}
+\rhead{\textbf{\subjectname}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\setlist[itemize]{partopsep=0pt, parsep=0pt, itemsep=0.2em, left=1.5em}
+
 \begin{document}
+
+\thispagestyle{empty}
+
 \maketitle
 
-\section{Technical specifications}
+% TODO check bellow before closing report
+
+% The ﬁnal report should be a well-presented technical report discussing your project (in pdf format). If your project is primarily a programming eﬀort, you should explain how the program works, give speciﬁc sample runs and analyze the results. The report should be 5-10 pages in length, although may be less if you do the standard project. If your project team is more than one person then the report should indicate what each person did on the project.”
+% 
+% - 5-10 pages in length
+% - you should explain how the program works
+% - give speciﬁc sample runs
+% - analyze the results.
+% - indicate what each person did on the project.
+%
+% Again, the ﬁnal project and report are due Friday, December 13, 2025.
+% 
+% ## Report Details
+% 
+% In addition to the overview provided above, your report needs to address each of the following questions. You are encouraged to explicitly use this format in organizing your report.
+% 
+% - What is your name(s)?
+% - What project did you select?
+% - Describe the work did you do on the project including any deviations from the description if you chose standard project.
+% - What are the results you obtained? As appropriate, it is important you include sample output demonstrating functionality/results of your project.
+% - What went well on the project?
+% - What did you learn?
+% - What was hard?
+% - What, if anything, did you do beyond the standard project description (if you based your project on it)?
+% - What, if anything, did you not complete that was in the basic project description or your initial design?
+
+\section{Introduction}
+
+% - What project did you select?
+
+For the final project, we selected the standard ``Network Layer Routing'' project. The goal of the project is to develop an application to create different network topologies (represented as graphs), execute the link-state and distance-vector routing algorithms, and query the routing tables for each network node. We implement the basic requirements of the standard project and extend it in the following ways:
+
+% - Describe the work did you do on the project including any deviations from the description if you chose standard project.
+
+\begin{itemize}
+    \item A Textual User Interface (TUI) to interact with the application.
+    \item Additional features:
+          \begin{itemize}
+              \item Visualization of the network topology.
+              \item Save and load network topologies from files.
+              \item Load scripted commands from a file to automate tests.
+          \end{itemize}
+    \item An analysis of the performance of both algorithms in terms of convergence time and number of messages exchanged. % TODO check Automne
+    \item A variation of the distance vector algorithm that includes a "via" field in the routing table to prevent "counting to infinity" issues. % TODO check Automne
+\end{itemize}
+
+The rest of the report is organized as follows: Section \ref{sec:implementation} describes the implementation of the project, including the algorithms used. Section \ref{sec:results} presents the experimentation and results obtained. Finally, Section \ref{sec:conclusions} concludes the report with reflections on the project.
+
+\section{Implementation} \label{sec:implementation}
+
+% - What are the results you obtained? As appropriate, it is important you include sample output demonstrating functionality/results of your project.
+
+% - you should explain how the program works
+
+% - give speciﬁc sample runs
 
 \subsection{Algorithms used}
-In this project, we compare two different algorithms: the distance vector algorithm and the link state algorithm. The link state algorithm is a simple graph traversal that looks at all the possible routes from one specific node. \\
 
-The distance vector algorithm is run step by step. During one step, each node sends its current routing tables to all its neighbours. To simulate this sending process, we save a copy of all the routing tables at time $t$. Then this copy is given to each neighbour and used to build the new routing table at time $t+1$. \\
+In this project, we compare two different algorithms: the distance vector algorithm and the link state algorithm. The link state algorithm is a simple graph traversal that looks at all the possible routes from one specific node.
 
-The new table for $A$ at $t+1$ is built by creating a table with only one route: the route to $A$ with a distance of 0. It is then updated by the received tables from all neighbours. In our experiment, all tables are sent and received simultaneously. In a context where tables arrive irregularly, we would need to remove only the routes going through $B$ when receiving a table from $B$. We would also need to remove routes going through neighbours when we detect that we're not connected to them anymore. \\
+The distance vector algorithm is run step by step. During one step, each node sends its current routing tables to all its neighbours. To simulate this sending process, we save a copy of all the routing tables at time $t$. Then this copy is given to each neighbour and used to build the new routing table at time $t+1$.
 
-When receiving a table from a neighbour, a node uses it to update its own table. Let's call $A$ the receiving node and $B$ the sender. $A$ compares each route in the $B$ table (to which the distance from $A$ to $B$ has been added) with the routes it already knows and keep the shortest option. \\ 
+The new table for $A$ at $t+1$ is built by creating a table with only one route: the route to $A$ with a distance of 0. It is then updated by the received tables from all neighbours. In our experiment, all tables are sent and received simultaneously. In a context where tables arrive irregularly, we would need to remove only the routes going through $B$ when receiving a table from $B$. We would also need to remove routes going through neighbours when we detect that we're not connected to them anymore.
+
+When receiving a table from a neighbour, a node uses it to update its own table. Let's call $A$ the receiving node and $B$ the sender. $A$ compares each route in the $B$ table (to which the distance from $A$ to $B$ has been added) with the routes it already knows and keep the shortest option.
 
 \subsubsection{Legacy distance vector vs our distance vector}
 
-In the classical distance vector algorithm, that we call legacy in this report,  tables sent only contains a destination and a distance for each routes. This can create "counting to infinity" issues. In this work we will compare this legacy version with our own variation that includes destination, distance and via for each route. This allows us to ignore that goes through ourselves. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and don't need this information. Taking it into account runs the risk of propagating wrong information. \\
+In the classical distance vector algorithm, that we call legacy in this report,  tables sent only contains a destination and a distance for each routes. This can create "counting to infinity" issues. In this work we will compare this legacy version with our own variation that includes destination, distance and via for each route. This allows us to ignore that goes through ourselves. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and don't need this information. Taking it into account runs the risk of propagating wrong information.
 
 We implemented both methods and compared them to get an idea of the usefulness of such a failsafe.
 
@@ -39,10 +222,10 @@ There are several ways of measuring the difference between the ideal routing tab
 
 Let us note:
 \begin{itemize}
-	\item $G$ the graph
-	\item $A$, $B$, $C$... nodes in graph $G$
-	\item $d_{ls}(A,B)$ the distance between A and B as given by the link state algorithm
-	\item $d_{t}(A,B)$ with $t \in \mathbb{N}$ the distance between A and B in the routing table of A after $t$ iterations. \\
+    \item $G$ the graph
+    \item $A$, $B$, $C$... nodes in graph $G$
+    \item $d_{ls}(A,B)$ the distance between A and B as given by the link state algorithm
+    \item $d_{t}(A,B)$ with $t \in \mathbb{N}$ the distance between A and B in the routing table of A after $t$ iterations. \\
 \end{itemize}
 
 A naïve way to measure the error would be to do this :\\
@@ -52,9 +235,9 @@ $naiveError_{t} = \sum_{A \in G} \sum_{B \in G} |d_{ls}(A,B) - d_{t}(A,B)|$ \\
 This, however, presents some problems. Firstly, it is ill defined for cases where $A$ and $B$ are not connected or when the dv routing table doesn't know how to reach $B$ even though a route exists. We can imagine another version: \\
 
 $numberErrors_{t} = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), d_{t}(A,B)}$ with  $\delta_{a,b}  = \begin{cases*}
-                    1 & if  $a = b$  \\
-                    0 & otherwise
-                 \end{cases*}$ \\
+        1 & if  $a = b$ \\
+        0 & otherwise
+    \end{cases*}$ \\
 
 This would count exactly the number of routes for which the dv table has a different distance from the ideal route. \\
 
@@ -68,8 +251,7 @@ $msgError_t = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), msg_{t}(A,B
 
 This metric is still not perfect. It doesn't take into account that some routing tables can have a correct route stored with a wrong distance. We argue that it is a good metric as it is close real world expectations of routing tables. Each error means that a message took longer to reach the destination than the ideal route. We can also measure only the message that failed to reach their destination. Sending a message through a non-efficient route is less of an issue than being unable to reach the destination at all even though a route exists. \\
 
-
-\section{Results}
+\section{Experimentation and Results} \label{sec:results}
 
 BLABLABLA
 
@@ -78,15 +260,15 @@ BLABLABLA
 Our proposed dv algorithm aims to fix the problem of the "count to infinity" posed by the legacy dv algorithm. Let us look at a simple example:\\
 
 \begin{figure}
-\includegraphics{../images/infinity.png}
-\caption{A simple example graph named Armand}
+    \includegraphics{../images/infinity.png}
+    \caption{A simple example graph named Armand}
 \end{figure}
 
 We assume that dv has been run enough time so that the routing tables are correct. If the edge between $A$ and $B$ suddenly becomes 300, the legacy algorithm will take a long time before correcting the routing tables. \\
 
 \begin{figure}
-\includegraphics{../images/infinity_legacy.png}
-\caption{Evolution of the msgError during 500 iterations of the dv legacy algorithm}
+    \includegraphics{../images/infinity_legacy.png}
+    \caption{Evolution of the msgError during 500 iterations of the dv legacy algorithm}
 \end{figure}
 
 This is a good illustration of counting to infinity. The bad news took a long time to travel, $B$ and $C$ remain convinced that they can reach A by going through each other, meaning that all messages from $B$ or $C$ to $A$ are lost until the count reached 300. Meanwhile, our own dv algorithm doesn't have any error and after two steps, the routing tables are updated with the correct distances. The absence of errors can be explained by the fact that $B$ refused to take a route from $C$ that would go through itself thus avoiding the infinite loop route that loses messages. \\
@@ -94,8 +276,31 @@ This is a good illustration of counting to infinity. The bad news took a long ti
 However, our algorithm is not immune to "count to infinity" problems, we just have to find another example: \\
 
 \begin{figure}
-\includegraphics{../images/devious.png}
-\caption{Another example graph named Béatrice}
+    \includegraphics{../images/devious.png}
+    \caption{Another example graph named Béatrice}
 \end{figure}
+
+% - analyze the results.
+
+\section{Conclusions} \label{sec:conclusions}
+
+
+% - What went well on the project?
+
+% - What did you learn?
+
+% - What was hard?
+
+% - What, if anything, did you do beyond the standard project description (if you based your project on it)?
+
+% - What, if anything, did you not complete that was in the basic project description or your initial design?
+
+% - Recap results
+
+\section*{Author Contributions}
+
+% - indicate what each person did on the project.
+
+Conceptualization: A.P., J.V.T.; Algorithm Implementation: A.P.; Interface Implementation: J.V.T.; Testing: A.P., J.V.T.; Experimentation and Result Analysis: A.P., J.V.T.; Documentation and Report: A.P., J.V.T.
 
 \end{document}

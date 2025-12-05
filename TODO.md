@@ -2,9 +2,10 @@
 | Filename | line # | TODO |
 |:------|:------:|:------|
 | [README.md](README.md#L98) | 98 | run with `uv` or just python |
-| [README.md](README.md#L299) | 299 | Write implementation details... |
-| [README.md](README.md#L300) | 300 | describe extreme cases |
-| [README.md](README.md#L301) | 301 | how to handle "if they cross each other" (?) |
+| [README.md](README.md#L311) | 311 | Write implementation details... |
+| [README.md](README.md#L312) | 312 | describe extreme cases |
+| [README.md](README.md#L313) | 313 | how to handle "if they cross each other" (?) |
+| [report/report.tex](report/report.tex#L145) | 145 | check bellow before closing report |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L93) | 93 | Implement this method better |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L102) | 102 | Implement this method better |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L159) | 159 | add file autocompletion |

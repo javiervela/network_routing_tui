@@ -296,6 +296,18 @@ F D 7
 
 ## Description of Routing Algorithms
 
+The application implements two adaptive routing algorithms: Link-State (LS) and Distance-Vector (DV). The DV algorithm is implemented in two variants: an enhanced version and a legacy version.
+
+### Link-State
+
+A simple graph traversal that looks at all the possible routes from one specific node.
+
+### Distance-Vector (Enhanced)
+
+The distance vector algorithm is run step by step. During one step, each node sends its current routing tables to all its neighbors. Each neighbor gets a copy of the routing table at time $t$ and used to build the new routing table at time $t+1$. When receiving a table from a neighbor, a node uses it to update its own table.
+
+### Distance-Vector (Legacy)
+
 <!-- TODO Write implementation details... -->
 <!-- TODO describe extreme cases -->
 <!-- TODO how to handle "if they cross each other" (?) -->
