@@ -109,12 +109,17 @@ class Graph(nx.Graph):
 
         for n in self.nodes:
             self.nodes[n]["routable"] = RoutingTable(n)
-            #self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
+            # self.nodes[n]["routable"].remove_neighbors(self.neighbors(n))
             for v in self.neighbors(n):
                 w = self.get_edge_data(n, v, "weight")["weight"]
                 self.nodes[n]["routable"].update_dv(routes[v], w, v, n)
 
     def send_msg(self, src, dest, rec_max=200):
+        """
+        Recursive function to obtain the distance from src to dest using the routing tables.
+
+        Returns -1 if the message cannot reach the destination within rec_max hops.
+        """
         if src == dest:
             return 0
         if rec_max == 0:
