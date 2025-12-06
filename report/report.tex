@@ -259,24 +259,28 @@ BLABLABLA
 
 Our proposed dv algorithm aims to fix the problem of the "count to infinity" posed by the legacy dv algorithm. Let us look at a simple example:\\
 
-\begin{figure}
-    \includegraphics{../images/infinity.png}
+\begin{figure}[h!]
+	\centering
+    \includegraphics[scale=0.7]{../images/infinity.png}
     \caption{A simple example graph named Armand}
 \end{figure}
 
 We assume that dv has been run enough time so that the routing tables are correct. If the edge between $A$ and $B$ suddenly becomes 300, the legacy algorithm will take a long time before correcting the routing tables. \\
 
-\begin{figure}
-    \includegraphics{../images/infinity_legacy.png}
+\begin{figure}[h!]
+	\centering
+    \includegraphics[scale=0.7]{../images/infinity_legacy.png}
     \caption{Evolution of the msgError during 500 iterations of the dv legacy algorithm}
 \end{figure}
 
-This is a good illustration of counting to infinity. The bad news took a long time to travel, $B$ and $C$ remain convinced that they can reach A by going through each other, meaning that all messages from $B$ or $C$ to $A$ are lost until the count reached 300. Meanwhile, our own dv algorithm doesn't have any error and after two steps, the routing tables are updated with the correct distances. The absence of errors can be explained by the fact that $B$ refused to take a route from $C$ that would go through itself thus avoiding the infinite loop route that loses messages. 
-However, our algorithm is not immune to "count to infinity" problems, we just have to find another example: \\
+This is a good illustration of counting to infinity. The bad news took a long time to travel, $B$ and $C$ remain convinced that they can reach A by going through each other, meaning that all messages from $B$ or $C$ to $A$ are lost until the count reached 300. Meanwhile, our own dv algorithm doesn't have any error and after two steps, the routing tables are updated with the correct distances. The absence of errors can be explained by the fact that $B$ refused to take a route from $C$ that would go through itself thus avoiding the infinite loop route that loses messages.
+However, our algorithm is not immune to "count to infinity" problems, we just have to find another example like the one in fig \ref{fig:beatrice} \\
 
-\begin{figure}
-    \includegraphics{../images/devious.png}
+\begin{figure}[h!] 
+	\centering
+    \includegraphics[scale=0.7]{../images/devious.png}
     \caption{Another example graph named Béatrice}
+	\label{fig:beatrice}
 \end{figure}
 
 If we then remove the edge between $C$ and $D$, and make the edge between $A$ and $D$ more expensive, the dv algorithm will count to infinity. $A$, $B$ and $C$ will create a loop-route between themselves and never know that it loops. Our dv algorithm is therefore not perfect. 

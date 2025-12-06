@@ -24,15 +24,25 @@ def gen_random(n = 10, p = 0.5):
     return G
 
 def gen_damage(G, n = 1):
-    while n > 0:
-        k = random.randrange(G.size())
-        u,v = [a for a in G.edges()][k]
+    l = damage_list(G,n) 
+    return damage(G,l)
+
+def damage_list(G, n=1):
+    l = [a for a in G.edges()]
+    random.shuffle(l)
+    return l[:n]
+
+def damage(G, l):
+    for a in l:
+        u,v = a
         G.remove_edge(u,v)
-        n -= 1  
-    return G      
+    return G
 
-
-
+def worsen(G, l):
+    for a in l:
+        u,v = a
+        G.add_edge(u, v, weight=500)
+    return G
 
 
         
