@@ -135,6 +135,8 @@
 \renewcommand{\headrulewidth}{0.4pt}
 
 \setlist[itemize]{partopsep=0pt, parsep=0pt, itemsep=0.2em, left=1.5em}
+\setlength{\parskip}{0.5em}
+
 
 \begin{document}
 
@@ -176,6 +178,9 @@ For the final project, we selected the standard ``Network Layer Routing'' projec
 
 % - Describe the work did you do on the project including any deviations from the description if you chose standard project.
 
+% TODO our main contributions are...
+% TODO additionally we have ...
+
 \begin{itemize}
     \item A Textual User Interface (TUI) to interact with the application.
     \item Additional features:
@@ -214,76 +219,89 @@ In the classical distance vector algorithm, that we call legacy in this report, 
 
 We implemented both methods and compared them to get an idea of the usefulness of such a failsafe.
 
-\subsection{Measuring errors}
+\subsection{Application Interface}
 
-In this report we measure the errors in routing tables when using the dv algorithm compared to ls. We want to know in how many iterations of dv the routing table reaches an accurate result. \\
+% TODO javier
 
-There are several ways of measuring the difference between the ideal routing table from ls with the routing table from dv at step $t$. Let us describe the various metrics used and their pros and cons. But first, here are some useful notations.\\
+% README from repo
+
+% TODO app only includes distance vector (enhanced)
+
+% - What are the results you obtained? As appropriate, it is important you include sample output demonstrating functionality/results of your project.
+% - you should explain how the program works
+% - give speciﬁc sample runs
+
+\section{Experimentation and Results} \label{sec:results}
+
+% TODO BLABLABLA
+
+\subsection{Error Metrics}
+
+In this report we measure the errors in routing tables when using the dv algorithm compared to ls. We want to know in how many iterations of dv the routing table reaches an accurate result.
+
+There are several ways of measuring the difference between the ideal routing table from ls with the routing table from dv at step $t$. Let us describe the various metrics used and their pros and cons. But first, here are some useful notations.
 
 Let us note:
 \begin{itemize}
     \item $G$ the graph
     \item $A$, $B$, $C$... nodes in graph $G$
     \item $d_{ls}(A,B)$ the distance between A and B as given by the link state algorithm
-    \item $d_{t}(A,B)$ with $t \in \mathbb{N}$ the distance between A and B in the routing table of A after $t$ iterations. \\
+    \item $d_{t}(A,B)$ with $t \in \mathbb{N}$ the distance between A and B in the routing table of A after $t$ iterations.
 \end{itemize}
 
-A naïve way to measure the error would be to do this :\\
+A naïve way to measure the error would be to do this :
 
-$naiveError_{t} = \sum_{A \in G} \sum_{B \in G} |d_{ls}(A,B) - d_{t}(A,B)|$ \\
+$naiveError_{t} = \sum_{A \in G} \sum_{B \in G} |d_{ls}(A,B) - d_{t}(A,B)|$
 
-This, however, presents some problems. Firstly, it is ill defined for cases where $A$ and $B$ are not connected or when the dv routing table doesn't know how to reach $B$ even though a route exists. We can imagine another version: \\
+This, however, presents some problems. Firstly, it is ill defined for cases where $A$ and $B$ are not connected or when the dv routing table doesn't know how to reach $B$ even though a route exists. We can imagine another version:
 
 $numberErrors_{t} = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), d_{t}(A,B)}$ with  $\delta_{a,b}  = \begin{cases*}
         1 & if  $a = b$ \\
         0 & otherwise
-    \end{cases*}$ \\
+    \end{cases*}$
 
-This would count exactly the number of routes for which the dv table has a different distance from the ideal route. \\
+This would count exactly the number of routes for which the dv table has a different distance from the ideal route.
 
 While this is an appropriate measure, it doesn't help in cases where the routing table knows of the correct distance but the route itself doesn't match. For this we have to introduce a new notation:
 
-$msg_t(A,B)$ is the time it takes a message to go from $A$ to $B$ following the routes given by the dv algorithm at step $t$. \\
+$msg_t(A,B)$ is the time it takes a message to go from $A$ to $B$ following the routes given by the dv algorithm at step $t$.
 
-Due to the nature of this measure, it can only be computed when all nodes in the graph have a routing table computed by dv. Some messages may never reach their destination, either because they reach a node that doesn't know how to reach said destination or because it gets stuck in an infinite loop between two nodes (for this specific case we implemented a hop limit). It allows us imagine this error metric: \\
+Due to the nature of this measure, it can only be computed when all nodes in the graph have a routing table computed by dv. Some messages may never reach their destination, either because they reach a node that doesn't know how to reach said destination or because it gets stuck in an infinite loop between two nodes (for this specific case we implemented a hop limit). It allows us imagine this error metric:
 
-$msgError_t = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), msg_{t}(A,B)}$ \\
+$msgError_t = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), msg_{t}(A,B)}$
 
-This metric is still not perfect. It doesn't take into account that some routing tables can have a correct route stored with a wrong distance. We argue that it is a good metric as it is close real world expectations of routing tables. Each error means that a message took longer to reach the destination than the ideal route. We can also measure only the message that failed to reach their destination. Sending a message through a non-efficient route is less of an issue than being unable to reach the destination at all even though a route exists. \\
+This metric is still not perfect. It doesn't take into account that some routing tables can have a correct route stored with a wrong distance. We argue that it is a good metric as it is close real world expectations of routing tables. Each error means that a message took longer to reach the destination than the ideal route. We can also measure only the message that failed to reach their destination. Sending a message through a non-efficient route is less of an issue than being unable to reach the destination at all even though a route exists.
 
-\section{Experimentation and Results} \label{sec:results}
-
-BLABLABLA
 
 \subsection{Evaluation of our dv algorithm}
 
-Our proposed dv algorithm aims to fix the problem of the "count to infinity" posed by the legacy dv algorithm. Let us look at a simple example:\\
+Our proposed dv algorithm aims to fix the problem of the "count to infinity" posed by the legacy dv algorithm. Let us look at a simple example:
 
 \begin{figure}[h!]
-	\centering
+    \centering
     \includegraphics[scale=0.7]{../images/infinity.png}
     \caption{A simple example graph named Armand}
 \end{figure}
 
-We assume that dv has been run enough time so that the routing tables are correct. If the edge between $A$ and $B$ suddenly becomes 300, the legacy algorithm will take a long time before correcting the routing tables. \\
+We assume that dv has been run enough time so that the routing tables are correct. If the edge between $A$ and $B$ suddenly becomes 300, the legacy algorithm will take a long time before correcting the routing tables.
 
 \begin{figure}[h!]
-	\centering
+    \centering
     \includegraphics[scale=0.7]{../images/infinity_legacy.png}
     \caption{Evolution of the msgError during 500 iterations of the dv legacy algorithm}
 \end{figure}
 
 This is a good illustration of counting to infinity. The bad news took a long time to travel, $B$ and $C$ remain convinced that they can reach A by going through each other, meaning that all messages from $B$ or $C$ to $A$ are lost until the count reached 300. Meanwhile, our own dv algorithm doesn't have any error and after two steps, the routing tables are updated with the correct distances. The absence of errors can be explained by the fact that $B$ refused to take a route from $C$ that would go through itself thus avoiding the infinite loop route that loses messages.
-However, our algorithm is not immune to "count to infinity" problems, we just have to find another example like the one in fig \ref{fig:beatrice} \\
+However, our algorithm is not immune to "count to infinity" problems, we just have to find another example like the one in fig \ref{fig:beatrice}
 
-\begin{figure}[h!] 
-	\centering
+\begin{figure}[h!]
+    \centering
     \includegraphics[scale=0.7]{../images/devious.png}
     \caption{Another example graph named Béatrice}
-	\label{fig:beatrice}
+    \label{fig:beatrice}
 \end{figure}
 
-If we then remove the edge between $C$ and $D$, and make the edge between $A$ and $D$ more expensive, the dv algorithm will count to infinity. $A$, $B$ and $C$ will create a loop-route between themselves and never know that it loops. Our dv algorithm is therefore not perfect. 
+If we then remove the edge between $C$ and $D$, and make the edge between $A$ and $D$ more expensive, the dv algorithm will count to infinity. $A$, $B$ and $C$ will create a loop-route between themselves and never know that it loops. Our dv algorithm is therefore not perfect.
 
 % - analyze the results.
 
