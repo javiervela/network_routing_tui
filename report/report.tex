@@ -203,9 +203,23 @@ The rest of the report is organized as follows: Section \ref{sec:implementation}
 
 % - give speciﬁc sample runs
 
-\subsection{Algorithms used}
+\subsection{Algorithms}
 
-In this project, we compare two different algorithms: the distance vector algorithm and the link state algorithm. The link state algorithm is a simple graph traversal that looks at all the possible routes from one specific node.
+% TODO maybe explain them one by one?
+
+In this project, we compare two different algorithms: the distance vector algorithm and the link state algorithm.
+
+We implemented both methods and compared them to get an idea of the usefulness of such a failsafe. % TODO
+
+\subsubsection*{Link State}
+
+The link state algorithm is a simple graph traversal that looks at all the possible routes from one specific node.
+
+% TODO more details?
+
+\subsubsection*{Distance Vector (legacy)} % TODO make sure this is legacy explanation
+
+% TODO talk about the algorithm itself
 
 The distance vector algorithm is run step by step. During one step, each node sends its current routing tables to all its neighbours. To simulate this sending process, we save a copy of all the routing tables at time $t$. Then this copy is given to each neighbour and used to build the new routing table at time $t+1$.
 
@@ -213,11 +227,9 @@ The new table for $A$ at $t+1$ is built by creating a table with only one route:
 
 When receiving a table from a neighbour, a node uses it to update its own table. Let's call $A$ the receiving node and $B$ the sender. $A$ compares each route in the $B$ table (to which the distance from $A$ to $B$ has been added) with the routes it already knows and keep the shortest option.
 
-\subsubsection{Legacy distance vector vs our distance vector}
+\subsubsection*{Distance vector (enhanced)}
 
-In the classical distance vector algorithm, that we call legacy in this report,  tables sent only contains a destination and a distance for each routes. This can create "counting to infinity" issues. In this work we will compare this legacy version with our own variation that includes destination, distance and via for each route. This allows us to ignore that goes through ourselves. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and don't need this information. Taking it into account runs the risk of propagating wrong information.
-
-We implemented both methods and compared them to get an idea of the usefulness of such a failsafe.
+In the classical distance vector algorithm, that we call legacy in this report, tables sent only contains a destination and a distance for each routes. This can create "counting to infinity" issues. In this work we will compare this legacy version with our own variation that includes destination, distance and via for each route. This allows us to ignore that goes through ourselves. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and don't need this information. Taking it into account runs the risk of propagating wrong information.
 
 \subsection{Application Interface}
 
@@ -272,8 +284,12 @@ $msgError_t = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), msg_{t}(A,B
 
 This metric is still not perfect. It doesn't take into account that some routing tables can have a correct route stored with a wrong distance. We argue that it is a good metric as it is close real world expectations of routing tables. Each error means that a message took longer to reach the destination than the ideal route. We can also measure only the message that failed to reach their destination. Sending a message through a non-efficient route is less of an issue than being unable to reach the destination at all even though a route exists.
 
+\subsection{Performance Comparison of Distance Vector Implementations} % TODO check title makes sense
 
-\subsection{Evaluation of our dv algorithm}
+% TODO dv-l vs. dv-e performance comparison, analysis of count to infinity problem
+
+% TODO change dv -> DV, ideally, DV-e and DV-l
+% TODO change ls -> LS
 
 Our proposed dv algorithm aims to fix the problem of the "count to infinity" posed by the legacy dv algorithm. Let us look at a simple example:
 
@@ -303,10 +319,11 @@ However, our algorithm is not immune to "count to infinity" problems, we just ha
 
 If we then remove the edge between $C$ and $D$, and make the edge between $A$ and $D$ more expensive, the dv algorithm will count to infinity. $A$, $B$ and $C$ will create a loop-route between themselves and never know that it loops. Our dv algorithm is therefore not perfect.
 
-% - analyze the results.
+\subsection{Performance Analysis for Distance Vector against Link State}
+
+% TODO LS ground truth, evaluate DV-e performance
 
 \section{Conclusions} \label{sec:conclusions}
-
 
 % - What went well on the project?
 
@@ -321,8 +338,6 @@ If we then remove the edge between $C$ and $D$, and make the edge between $A$ an
 % - Recap results
 
 \section*{Author Contributions}
-
-% - indicate what each person did on the project.
 
 Conceptualization: A.P., J.V.T.; Algorithm Implementation: A.P.; Interface Implementation: J.V.T.; Testing: A.P., J.V.T.; Experimentation and Result Analysis: A.P., J.V.T.; Documentation and Report: A.P., J.V.T.
 

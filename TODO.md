@@ -10,9 +10,16 @@
 | [report/report.tex](report/report.tex#L147) | 147 | check bellow before closing report |
 | [report/report.tex](report/report.tex#L181) | 181 | our main contributions are... |
 | [report/report.tex](report/report.tex#L182) | 182 | additionally we have ... |
-| [report/report.tex](report/report.tex#L224) | 224 | javier |
-| [report/report.tex](report/report.tex#L228) | 228 | app only includes distance vector (enhanced) |
-| [report/report.tex](report/report.tex#L236) | 236 | BLABLABLA |
+| [report/report.tex](report/report.tex#L208) | 208 | maybe explain them one by one? |
+| [report/report.tex](report/report.tex#L218) | 218 | more details? |
+| [report/report.tex](report/report.tex#L222) | 222 | talk about the algorithm itself |
+| [report/report.tex](report/report.tex#L236) | 236 | javier |
+| [report/report.tex](report/report.tex#L240) | 240 | app only includes distance vector (enhanced) |
+| [report/report.tex](report/report.tex#L248) | 248 | BLABLABLA |
+| [report/report.tex](report/report.tex#L289) | 289 | dv-l vs. dv-e performance comparison, analysis of count to infinity problem |
+| [report/report.tex](report/report.tex#L291) | 291 | change dv -> DV, ideally, DV-e and DV-l |
+| [report/report.tex](report/report.tex#L292) | 292 | change ls -> LS |
+| [report/report.tex](report/report.tex#L324) | 324 | LS ground truth, evaluate DV-e performance |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L93) | 93 | Implement this method better |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L102) | 102 | Implement this method better |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L159) | 159 | add file autocompletion |
