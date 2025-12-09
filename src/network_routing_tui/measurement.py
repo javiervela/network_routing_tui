@@ -34,8 +34,25 @@ def evaluate_convergence(G, legacy = False, convergence_limit = 1000):
         i += 1
         if i > convergence_limit:
             return -1
-    return i        
+    return i     
 
+def evaluate_weak_edge(G, legacy = False, convergence_limit = 200):
+    longest = 0
+    bu,bv = "A", "A"
+    G.save_file("temp.txt")
+    for u, v, weight in G.edges.data("weight"):
+        H = Graph()
+        H.load_file("temp.txt")
+        for i in range(50):
+            H.distance_vector()
+        H.add_edge(u,v, 100)   
+        d = evaluate_convergence(H, legacy, convergence_limit)
+        if d == -1:
+            d = convergence_limit
+        if d > longest:
+            longest = d
+            bu, bv = u,v
+    return bu,bv,longest
 
 
 

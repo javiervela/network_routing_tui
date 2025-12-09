@@ -1,0 +1,9 @@
+A B 1
+A D 2
+B C 9
+B D 8
+B E 1
+B F 4
+D C 9
+D E 5
+D F 1
