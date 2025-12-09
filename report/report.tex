@@ -224,25 +224,56 @@ In the classical distance vector algorithm, that we call legacy in this report, 
 
 \subsection{Application Interface}
 
-% - What are the results you obtained? As appropriate, it is important you include sample output demonstrating functionality/results of your project.
+The application provides a Textual User Interface (TUI) that allows users to interact with the network routing algorithms. The TUI is built using the \texttt{textual} Python library, which provides a rich set of widgets and layout options for building terminal-based applications. The application allows users to create network topologies, run the routing algorithms, and visualize the results. The TUI is designed to be user-friendly and intuitive. Figure \ref{fig:tui} shows a screenshot of the TUI.
 
-% - you should explain how the program works
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{../images/tui_wallpaper.png}
+    \caption{Textual User Interface of the application}
+    \label{fig:tui}
+\end{figure}
 
-% - give speciﬁc sample runs
+The application also supports a Command Line Interface (CLI) mode, which allows users to run the application without the TUI. This mode is useful for automated testing and scripting. The CLI mode accepts commands as arguments and executes them directly. Both modes share the same commands shown in Table \ref{tab:commands}. The Distance Vector algorithm for the \texttt{dv} command corresponds to our enhanced version.
 
 
+\begin{table}
+    \begin{center}
+        \caption{List of commands supported by the application}
+        \label{tab:commands}
+        \begin{tabular}{|l|l|}
+            \hline
+            \textbf{Command}              & \textbf{Description}                               \\
+            \hline
+            \texttt{X Y COST}             & Add or update edge X-Y with given COST             \\
+            \hline
+            \texttt{X Y -}                & Remove edge between nodes X and Y                  \\
+            \hline
+            \texttt{ls X}                 & Run link-state from node X                         \\
+            \hline
+            \texttt{dv X}                 & Run one distance-vector iteration; print X's table \\
+            \hline
+            \texttt{show}                 & Display the graph in a window                      \\
+            \hline
+            \texttt{saveg FILE}           & Save graph to FILE                                 \\
+            \hline
+            \texttt{savert X FILE}        & Save routing table of node X to FILE               \\
+            \hline
+            \texttt{print X}              & Print routing table for node X                     \\
+            \hline
+            \texttt{load FILE}            & Load graph from FILE                               \\
+            \hline
+            \texttt{clear}                & Remove all nodes and edges                         \\
+            \hline
+            \texttt{help}                 & Show help                                          \\
+            \hline
+            \texttt{quit} / \texttt{exit} & Exit                                               \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
 
+For more information and examples on the usage of the application or if you want to try it out, please refer to the \href{https://github.com/javiervela/network_routing_tui}{project repository}.
 
-
-% TODO javier
-
-% README from repo
-
-% TODO app only includes distance vector (enhanced)
-
-% - What are the results you obtained? As appropriate, it is important you include sample output demonstrating functionality/results of your project.
-% - you should explain how the program works
-% - give speciﬁc sample runs
 
 \section{Experimentation and Results} \label{sec:results}
 
