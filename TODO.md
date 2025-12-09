@@ -14,7 +14,7 @@
 | [report/report.tex](report/report.tex#L290) | 290 | dv-l vs. dv-e performance comparison, analysis of count to infinity problem |
 | [report/report.tex](report/report.tex#L292) | 292 | change dv -> DV, ideally, DV-e and DV-l |
 | [report/report.tex](report/report.tex#L293) | 293 | change ls -> LS |
-| [report/report.tex](report/report.tex#L388) | 388 | LS ground truth, evaluate DV-e performance |
+| [report/report.tex](report/report.tex#L390) | 390 | LS ground truth, evaluate DV-e performance |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L93) | 93 | Implement this method better |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L102) | 102 | Implement this method better |
 | [src/network_routing_tui/network_routing.py](src/network_routing_tui/network_routing.py#L159) | 159 | add file autocompletion |
