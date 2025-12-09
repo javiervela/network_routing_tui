@@ -174,7 +174,7 @@
 
 % - What project did you select?
 
-For the final project, we selected the standard ``Network Layer Routing'' project. The goal of the project is to develop an application to create different network topologies (represented as graphs), execute the link-state and distance-vector routing algorithms, and query the routing tables for each network node. We implemented the basic requirements of the standard project and extend it with additional features and analysis. Our main contributions are the following:
+For the final project, we selected the standard ``Network Layer Routing'' project. The goal of the project is to develop an application to create different network topologies (represented as graphs), execute the Link State and Distance Vector routing algorithms, and query the routing tables for each network node. We implemented the basic requirements of the standard project and extend it with additional features and analysis. Our main contributions are the following:
 
 \begin{itemize}
     \item A Textual User Interface (TUI) to interact with the application.
@@ -194,33 +194,31 @@ The rest of the report is organized as follows: Section \ref{sec:implementation}
 
 \section{Implementation} \label{sec:implementation}
 
+In this section, we describe the details of the main two components of the project: the algorithms used and the application interface.
+
 \subsection{Algorithms}
 
-% TODO maybe explain them one by one?
-
-In this project, we compare two different algorithms: the distance vector algorithm and the link state algorithm.
-
-We implemented both methods and compared them to get an idea of the usefulness of such a failsafe. % TODO
+In this project, we implement two different algorithms: the distance vector algorithm and the link state algorithm. For the distance vector algorithm, we implemented two variations: the classical version (which we call legacy) and our own enhanced version that includes a ``via'' field in the routing table to prevent counting to infinity issues. In the analysis section, we compare both versions of the distance vector algorithm to get an idea of the benefits of our enhancement.
 
 \subsubsection*{Link State}
 
-The link state algorithm is a simple graph traversal that looks at all the possible routes from one specific node.
+The Link State algorithm is a simple graph traversal that looks at all the possible routes from one specific source node. It uses Dijkstra's algorithm to find the shortest path from the source node to all other nodes in the graph. The algorithm maintains a priority queue of nodes to explore, ordered by their current known distance from the source node. Because the algorithm has a global view of the graph, it converges quickly to the optimal routing table for the source node.
 
-% TODO more details?
+\subsubsection*{Distance Vector (legacy)}
 
-\subsubsection*{Distance Vector (legacy)} % TODO make sure this is legacy explanation
+The Distance Vector algorithm is a distributed algorithm where each node only knows about its direct neighbors and the cost to reach them. Each node maintains a routing table that contains the best known distance to each destination node in the network. The algorithm works by exchanging routing tables between neighboring nodes and updating the routing table based on the received information.
 
-% TODO talk about the algorithm itself
+The Distance Vector algorithm is run step by step. During one step, each node sends its current routing tables to all its neighbors. To simulate this sending process, we save a copy of all the routing tables at time $t$. Then this copy is given to each neighbor and used to build the new routing table at time $t+1$.
 
-The distance vector algorithm is run step by step. During one step, each node sends its current routing tables to all its neighbours. To simulate this sending process, we save a copy of all the routing tables at time $t$. Then this copy is given to each neighbour and used to build the new routing table at time $t+1$.
+The new table for $A$ at $t+1$ is built by creating a table with only one route: the route to $A$ with a distance of 0. It is then updated by the received tables from all neighbors. In our experiment, all tables are sent and received simultaneously. In a context where tables arrive irregularly, we would need to remove only the routes going through $B$ when receiving a table from $B$. We would also need to remove routes going through neighbors when we detect that we're not connected to them anymore.
 
-The new table for $A$ at $t+1$ is built by creating a table with only one route: the route to $A$ with a distance of 0. It is then updated by the received tables from all neighbours. In our experiment, all tables are sent and received simultaneously. In a context where tables arrive irregularly, we would need to remove only the routes going through $B$ when receiving a table from $B$. We would also need to remove routes going through neighbours when we detect that we're not connected to them anymore.
+When receiving a table from a neighbor, a node uses it to update its own table. Let's call $A$ the receiving node and $B$ the sender. $A$ compares each route in the $B$ table (to which the distance from $A$ to $B$ has been added) with the routes it already knows and keep the shortest option.
 
-When receiving a table from a neighbour, a node uses it to update its own table. Let's call $A$ the receiving node and $B$ the sender. $A$ compares each route in the $B$ table (to which the distance from $A$ to $B$ has been added) with the routes it already knows and keep the shortest option.
+This is the classical distance vector algorithm that suffers from counting to infinity problems. These problems arise when a link goes down or its cost increases significantly. Nodes may continue to believe that they can reach a destination through a neighbor, leading to incorrect routing information that propagates through the network. We refer to this version as legacy in this report.
 
 \subsubsection*{Distance vector (enhanced)}
 
-In the classical distance vector algorithm, that we call legacy in this report, tables sent only contains a destination and a distance for each routes. This can create "counting to infinity" issues. In this work we will compare this legacy version with our own variation that includes destination, distance and via for each route. This allows us to ignore that goes through ourselves. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and don't need this information. Taking it into account runs the risk of propagating wrong information.
+In the distance vector algorithm legacy version, tables sent only contains a destination and a distance for each routes, leading to "counting to infinity" issues. As an ``enhanced'' version of the distance vector algorithm, we added a ``via'' field to each route in the routing table. This allows a certain node to ignore routes that go through itself. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and doesn't need this information. Taking it into account runs the risk of propagating wrong information.
 
 \subsection{Application Interface}
 
@@ -248,9 +246,9 @@ The application also supports a Command Line Interface (CLI) mode, which allows 
             \hline
             \texttt{X Y -}                & Remove edge between nodes X and Y                  \\
             \hline
-            \texttt{ls X}                 & Run link-state from node X                         \\
+            \texttt{ls X}                 & Run Link State from node X                         \\
             \hline
-            \texttt{dv X}                 & Run one distance-vector iteration; print X's table \\
+            \texttt{dv X}                 & Run one Distance Vector iteration; print X's table \\
             \hline
             \texttt{show}                 & Display the graph in a window                      \\
             \hline
