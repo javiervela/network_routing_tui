@@ -38,10 +38,10 @@ def damage(G, l):
         G.remove_edge(u,v)
     return G
 
-def worsen(G, l):
+def worsen(G, l, dmg = 500):
     for a in l:
         u,v = a
-        G.add_edge(u, v, weight=500)
+        G.add_edge(u, v, weight=dmg)
     return G
 
 
