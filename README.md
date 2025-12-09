@@ -91,11 +91,39 @@ Launching the TUI presents the following interface:
 
 ---
 
+## Installation
+
+1. **Clone the repository**:
+
+```bash
+git clone https://github.com/javiervela/network_routing_tui.git
+cd network_routing_tui
+```
+
+2. **Install**:
+
+There are 2 (easy) options to install the project and its dependencies:
+
+* Use `uv` to create a virtual environment and install dependencies:
+
+```bash
+uv sync                    # Create the virtual environment and install the package
+source .venv/bin/activate  # Activate the virtual environment
+```
+
+* Use `pip` to install the package:
+
+```bash
+virtualenv -p python .venv # Create a virtual environment
+source .venv/bin/activate  # Activate the virtual environment
+pip install .              # Install the package
+```
+
+---
+
 ## How to Run
 
 The application can be run in either TUI or CLI mode.
-
-<!--  TODO run with `uv` or just python -->
 
 ### Run the TUI (default)
 
