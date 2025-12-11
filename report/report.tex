@@ -220,7 +220,7 @@ This is the classical distance vector algorithm that suffers from counting to in
 
 \subsubsection*{Distance vector (enhanced)}
 
-In the distance vector algorithm legacy version, tables sent only contains a destination and a distance for each routes, leading to "counting to infinity" issues. As an ``enhanced'' version of the distance vector algorithm, we added a ``via'' field to each route in the routing table. This allows a certain node to ignore routes that go through itself. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and doesn't need this information. Taking it into account runs the risk of propagating wrong information.
+In the distance vector algorithm legacy version, tables sent only contains a destination and a distance for each routes, leading to "counting to infinity" issues. As an ``enhanced'' version of the distance vector algorithm, we added a ``via'' field to each route in the routing table. This allows a certain node to ignore routes that go through itself. If $B$ thinks it can reach $C$ through $A$, $A$ ignores the information. $A$ knows better than to take into account a route that goes via itself.
 
 \subsection{Application Interface}
 
