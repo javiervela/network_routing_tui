@@ -202,7 +202,7 @@ In this project, we implement two different algorithms: the distance vector algo
 
 \subsubsection*{Link State}
 
-The Link State algorithm is a simple graph traversal that looks at all the possible routes from one specific source node. It uses Dijkstra's algorithm to find the shortest path from the source node to all other nodes in the graph. The algorithm maintains a priority queue of nodes to explore, ordered by their current known distance from the source node. Because the algorithm has a global view of the graph, it converges immediately to the optimal routing table for the source node.
+The Link State (\texttt{LS}) algorithm is a simple graph traversal that looks at all the possible routes from one specific source node. It uses Dijkstra's algorithm to find the shortest path from the source node to all other nodes in the graph. The algorithm maintains a priority queue of nodes to explore, ordered by their current known distance from the source node. Because the algorithm has a global view of the graph, it converges immediately to the optimal routing table for the source node.
 
 \subsubsection*{Distance Vector (legacy)}
 
@@ -216,11 +216,11 @@ When receiving a table from a neighbor, a node uses it to update its own table. 
 
 Given that the algorithm only has a local view of the graph, it may take several iterations to converge to the optimal routing table.
 
-This is the classical distance vector algorithm that suffers from counting to infinity problems. These problems arise when a link goes down or its cost increases significantly. Nodes may continue to believe that they can reach a destination through a neighbor, leading to incorrect routing information that propagates through the network. We refer to this version as legacy in this report.
+This is the classical distance vector algorithm that suffers from counting to infinity problems. These problems arise when a link goes down or its cost increases significantly. Nodes may continue to believe that they can reach a destination through a neighbor, leading to incorrect routing information that propagates through the network. We refer to this version as ``legacy'' (\texttt{DV-l}) in this report.
 
 \subsubsection*{Distance vector (enhanced)}
 
-In the distance vector algorithm legacy version, tables sent only contains a destination and a distance for each routes, leading to "counting to infinity" issues. As an ``enhanced'' version of the distance vector algorithm, we added a ``via'' field to each route in the routing table. This allows a certain node to ignore routes that go through itself. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and doesn't need this information. Taking it into account runs the risk of propagating wrong information.
+In the distance vector algorithm legacy version, tables sent only contains a destination and a distance for each routes, leading to ``counting to infinity'' issues. As an ``enhanced'' (\texttt{DV-e}) version of the distance vector algorithm, we added a ``via'' field to each route in the routing table. This allows a certain node to ignore routes that go through itself. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and doesn't need this information. Taking it into account runs the risk of propagating wrong information.
 
 \subsection{Application Interface}
 
@@ -233,8 +233,7 @@ The application provides a Textual User Interface (TUI) that allows users to int
     \label{fig:tui}
 \end{figure}
 
-The application also supports a Command Line Interface (CLI) mode, which allows users to run the application without the TUI. This mode is useful for automated testing and scripting. The CLI mode accepts commands as arguments and executes them directly. Both modes share the same commands shown in Table \ref{tab:commands}. The Distance Vector algorithm for the \texttt{dv} command corresponds to our enhanced version.
-
+The application also supports a Command Line Interface (CLI) mode, which allows users to run the application without the TUI. This mode is useful for automated testing and scripting. The CLI mode accepts commands as arguments and executes them directly. Both modes share the same commands shown in Table \ref{tab:commands}. The Distance Vector algorithm for the \texttt{DV} command corresponds to our enhanced version.
 
 \begin{table}
     \begin{center}
@@ -281,11 +280,10 @@ For more information and examples on the usage of the application or if you want
 
 \subsection{Error Metrics}
 
-In this report we measure the errors in routing tables when using the dv algorithm compared to ls. We want to know in how many iterations of dv the routing table reaches an accurate result.
+In this report we measure the errors in routing tables when using \texttt{DV} (either enhanced \texttt{DV-e} or legacy \texttt{DV-l}) compared to \texttt{LS}. We want to know in how many iterations of \texttt{DV} the routing table reaches an accurate result. There are several ways of measuring the difference between the ideal routing table, obtained from \texttt{LS}, with the routing table from \texttt{DV} at step $t$. Let us describe the various metrics used and their advantages and disadvantages.
 
-There are several ways of measuring the difference between the ideal routing table from ls with the routing table from dv at step $t$. Let us describe the various metrics used and their pros and cons. But first, here are some useful notations.
+First, here are the notations we will use throughout this section:
 
-Let us note:
 \begin{itemize}
     \item $G$ the graph
     \item $A$, $B$, $C$... nodes in graph $G$
@@ -293,24 +291,22 @@ Let us note:
     \item $d_{t}(A,B)$ with $t \in \mathbb{N}$ the distance between A and B in the routing table of A after $t$ iterations.
 \end{itemize}
 
-A naïve way to measure the error would be to do this :
+A naïve way to measure the error would be to do this:
 
 $naiveError_{t} = \sum_{A \in G} \sum_{B \in G} |d_{ls}(A,B) - d_{t}(A,B)|$
 
-This, however, presents some problems. Firstly, it is ill defined for cases where $A$ and $B$ are not connected or when the dv routing table doesn't know how to reach $B$ even though a route exists. We can imagine another version:
+This, however, presents some problems. Firstly, it is ill defined for cases where $A$ and $B$ are not connected or when the \texttt{DV} routing table doesn't know how to reach $B$ even though a route exists. We can imagine another version:
 
 $numberErrors_{t} = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), d_{t}(A,B)}$ with  $\delta_{a,b}  = \begin{cases*}
         1 & if  $a = b$ \\
         0 & otherwise
     \end{cases*}$
 
-This would count exactly the number of routes for which the dv table has a different distance from the ideal route.
+This would count exactly the number of routes for which the \texttt{DV} table has a different distance from the ideal route. While this is an appropriate measure, it doesn't help in cases where the routing table knows of the correct distance but the route itself doesn't match.
 
-While this is an appropriate measure, it doesn't help in cases where the routing table knows of the correct distance but the route itself doesn't match. For this we have to introduce a new notation:
+For this we have to introduce a new notation: $msg_t(A,B)$ is the time it takes a message to go from $A$ to $B$ following the routes given by the \texttt{DV} algorithm at step $t$.
 
-$msg_t(A,B)$ is the time it takes a message to go from $A$ to $B$ following the routes given by the dv algorithm at step $t$.
-
-Due to the nature of this measure, it can only be computed when all nodes in the graph have a routing table computed by dv. Some messages may never reach their destination, either because they reach a node that doesn't know how to reach said destination or because it gets stuck in an infinite loop between two nodes (for this specific case we implemented a hop limit). It allows us imagine this error metric:
+Due to the nature of this measure, it can only be computed when all nodes in the graph have a routing table computed by \texttt{DV}. Some messages may never reach their destination, either because they reach a node that doesn't know how to reach said destination or because it gets stuck in an infinite loop between two nodes (for this specific case we implemented a hop limit). It allows us imagine this error metric:
 
 $msgError_t = \sum_{A \in G} \sum_{B \in G} 1 - \delta_{d_{ls}(A,B), msg_{t}(A,B)}$
 
@@ -320,48 +316,45 @@ This metric is still not perfect. It doesn't take into account that some routing
 
 % TODO dv-l vs. dv-e performance comparison, analysis of count to infinity problem
 
-% TODO change dv -> DV, ideally, DV-e and DV-l
-% TODO change ls -> LS
-
-Our proposed dv algorithm aims to fix the problem of the "count to infinity" posed by the legacy dv algorithm. Let us look at a simple example:
+The proposed \texttt{DV-e} algorithm aims to fix the problem of the ``count to infinity'' posed by \texttt{DV-l}. Figure \ref{fig:armand} shows a simple example graph. We assume that \texttt{DV} has been run enough time so that the routing tables are correct. If the edge between $A$ and $B$ suddenly becomes 300, the legacy algorithm will take a long time before correcting the routing tables as shown in Figure \ref{fig:armand_legacy}.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.7]{../images/infinity.png}
-    \caption{A simple example graph named Armand}
+    \includegraphics[width=0.5\textwidth]{../images/infinity.png}
+    \caption{A simple example graph named Armand.}
+    \label{fig:armand}
 \end{figure}
 
-We assume that dv has been run enough time so that the routing tables are correct. If the edge between $A$ and $B$ suddenly becomes 300, the legacy algorithm will take a long time before correcting the routing tables.
-
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.7]{../images/infinity_legacy.png}
-    \caption{Evolution of the msgError during 500 iterations of the dv legacy algorithm}
+    \includegraphics[width=0.5\textwidth]{../images/infinity_legacy.png}
+    \caption{Evolution of the $msgError$ during 500 iterations of the \texttt{DV-l} algorithm.}
+    \label{fig:armand_legacy}
 \end{figure}
 
-This is a good illustration of counting to infinity. The bad news took a long time to travel, $B$ and $C$ remain convinced that they can reach A by going through each other, meaning that all messages from $B$ or $C$ to $A$ are lost until the count reached 300. Meanwhile, our own dv algorithm doesn't have any error and after two steps, the routing tables are updated with the correct distances. The absence of errors can be explained by the fact that $B$ refused to take a route from $C$ that would go through itself thus avoiding the infinite loop route that loses messages.
-However, our algorithm is not immune to "count to infinity" problems, we just have to find another example like the one in fig \ref{fig:beatrice}
+This is a good illustration of counting to infinity. The bad news took a long time to travel, $B$ and $C$ remain convinced that they can reach A by going through each other, meaning that all messages from $B$ or $C$ to $A$ are lost until the count reached 300. Meanwhile, the \texttt{DV-e} algorithm doesn't have any error and after two steps, the routing tables are updated with the correct distances. The absence of errors can be explained by the fact that $B$ refused to take a route from $C$ that would go through itself thus avoiding the infinite loop route that loses messages.
+
+However, our algorithm is not immune to ``count to infinity'' problems, we just have to find another example like the one in Figure \ref{fig:beatrice}. If we then remove the edge between $C$ and $D$, and make the edge between $A$ and $D$ more expensive, the \texttt{DV-l} algorithm will count to infinity. $A$, $B$ and $C$ will create a loop-route between themselves and never know that it loops. \texttt{DV-e} is therefore not perfect.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.7]{../images/devious.png}
-    \caption{Another example graph named Béatrice}
+    \includegraphics[width=0.5\textwidth]{../images/devious.png}
+    \caption{Another example graph named Béatrice.}
     \label{fig:beatrice}
 \end{figure}
 
-If we then remove the edge between $C$ and $D$, and make the edge between $A$ and $D$ more expensive, the dv algorithm will count to infinity. $A$, $B$ and $C$ will create a loop-route between themselves and never know that it loops. Our dv algorithm is therefore not perfect.
-
-Looking further into this, we can find examples where our enhanced algorithm is slower to converge than the legacy one. The counter examples were found by going through random graphs. We decided to investigate deeper into the benefits of our new algorithm.
+Looking further into this, we can find examples where \texttt{DV-e} is slower to converge than \texttt{DV-l}. The counter examples were found by going through random graphs. We decided to investigate deeper into the benefits of our new algorithm.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.7]{../images/charles.png}
-    \caption{If you set the weight of edge AB to 50, legacy will converge in 2 steps, whereas enhanced will converge in 3.}
+    \includegraphics[width=0.5\textwidth]{../images/charles.png}
+    \caption{If you set the weight of edge AB to 50, \texttt{DV-l} will converge in 2 steps, whereas \texttt{DV-e} will converge in 3.}
     \label{fig:charles}
 \end{figure}
 
 \begin{table}[h!]
     \begin{center}
+        \caption{Average number of steps to converge for \texttt{DV-l} compared to \texttt{DV-e} depending on the number of nodes in the graph and the density p. (positive numbers mean \texttt{DV-l} take more steps than \texttt{DV-e}).}
         \begin{tabular}{|c|c|c|c|}
             \hline
             Number of Nodes & p=0.1 & p=0.5 & p=0.9 \\
@@ -381,16 +374,16 @@ Looking further into this, we can find examples where our enhanced algorithm is 
             16              & 0.18  & 0.49  & 0.28  \\
             \hline
         \end{tabular}
-        \caption{Average number of steps to converge for legacy compared to enhanced depending on the number of nodes in the graph and the density p. (positive numbers mean legacy take more steps than enhanced)}
     \end{center}
 \end{table}
 
-We compared both algorithms on graphs randomly generated by two parameters: the number of nodes and the probability p of an edge between two nodes. For each of these graph we chose an edge that will be damaged (its weight will be set to 500). We compare the number of steps it takes for enhanced to converge compared to legacy. According to these preliminary results, the density of the graph doesn't seem to affect the relative performance. On the contrary, the number of nodes has a massive influence. Our method is barely even better when the graphs get bigger, averaging 0.26 less steps for graphs with 16 nodes.
+We compared both algorithms on graphs randomly generated by two parameters: the number of nodes and the probability p of an edge between two nodes. For each of these graph we chose an edge that will be damaged (its weight will be set to 500). We compare the number of steps it takes for \texttt{DV-e} to converge compared to \texttt{DV-l}. According to these preliminary results, the density of the graph doesn't seem to affect the relative performance. On the contrary, the number of nodes has a massive influence. Our method is barely even better when the graphs get bigger, averaging 0.26 less steps for graphs with 16 nodes.
 
-At this step, we can make the hypothesis that with bigger graphs, the risk of counting to infinity is lower, thus reducing the usefulness of our enhanced algorithm. But we would like confirmation of that. That's why we decided to count the number of time count to infinity happens. In order to check if a count to infinity is happening, we measure the convergence time of the legacy algorithm on the same graph twice. The first time we increase the chose edge weight to 100, the second time we increase it to 150. If the algorithm takes longer in the second case, it is because it needs time to count the extra 50.
+At this step, we can make the hypothesis that with bigger graphs, the risk of counting to infinity is lower, thus reducing the usefulness of \texttt{DV-e}. But we would like confirmation of that. That's why we decided to count the number of time count to infinity happens. In order to check if a count to infinity is happening, we measure the convergence time of \texttt{DV-l} on the same graph twice. The first time we increase the chose edge weight to 100, the second time we increase it to 150. If the algorithm takes longer in the second case, it is because it needs time to count the extra 50.
 
 \begin{table}[h!]
     \begin{center}
+        \caption{Percentage of count to infinity depending on node amount and density.}
         \begin{tabular}{|c|c|c|c|}
             \hline
             Number of Nodes & p=0.1  & p=0.5  & p=0.9  \\
@@ -410,7 +403,6 @@ At this step, we can make the hypothesis that with bigger graphs, the risk of co
             16              & 0.0\%  & 0.0\%  & 0.0\%  \\
             \hline
         \end{tabular}
-        \caption{Percentage of count to infinity depending on node amount and density}
     \end{center}
 \end{table}
 
