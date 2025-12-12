@@ -49,6 +49,13 @@ def link_graph(G, H):
     C.add_edge(get_name(k), get_name(j), random.randrange(1,10))
     return C
 
+def gen_star(n = 10):
+    G = Graph()
+    for i in range(1,n):
+        j = 0
+        G.add_edge(get_name(i), get_name(j), random.randrange(1,10))
+    return G
+
 def get_rename(u,l,n=0):
     if not u in l:
         l.append(u)

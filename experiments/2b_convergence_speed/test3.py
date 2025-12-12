@@ -6,7 +6,7 @@ warnings.filterwarnings("ignore")
 import json
 
 from network_routing_tui.graph import Graph
-from network_routing_tui.graph_generator import gen_random, damage_list, damage, worsen
+from network_routing_tui.graph_generator import gen_random, damage_list, damage, worsen, gen_mesh
 from network_routing_tui.measurement import evaluate_convergence, evaluate_routing
 
 EXPERIMENT_DIR = "./experiments/2b_convergence_speed/"
