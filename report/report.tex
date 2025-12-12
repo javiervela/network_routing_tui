@@ -188,7 +188,7 @@ For the final project, we selected the standard ``Network Layer Routing'' projec
     \item An analysis of the performance of the algorithms implemented.
 \end{itemize}
 
-The application is implemented in Python and is available at the \url{https://github.com/javiervela/network_routing_tui}. The \href{https://github.com/javiervela/network_routing_tui/blob/main/README.md}{\texttt{README} file} provides instructions on how to install and run the application, and many details and examples of its usage.
+The application is implemented in Python and is available at \url{https://github.com/javiervela/network_routing_tui}. The \href{https://github.com/javiervela/network_routing_tui/blob/main/README.md}{\texttt{README} file} provides instructions on how to install and run the application, and many details and examples of its usage.
 
 The rest of the report is organized as follows: Section \ref{sec:implementation} describes the implementation of the project, including the algorithms used. Section \ref{sec:results} presents the experimentation and results obtained. Finally, Section \ref{sec:conclusions} concludes the report with reflections on the project.
 
@@ -202,7 +202,7 @@ In this project, we implement two different algorithms: the distance vector algo
 
 \subsubsection*{Link State}
 
-The Link State (\texttt{LS}) algorithm is a simple graph traversal that looks at all the possible routes from one specific source node. It uses Dijkstra's algorithm to find the shortest path from the source node to all other nodes in the graph. The algorithm maintains a priority queue of nodes to explore, ordered by their current known distance from the source node. Because the algorithm has a global view of the graph, it converges immediately to the optimal routing table for the source node.
+The Link State (\texttt{LS}) algorithm is a simple graph traversal that looks at all the possible routes from one specific source node. It uses Dijkstra's algorithm to find the shortest path from the source node to all other nodes in the graph. The algorithm maintains a priority queue of nodes to explore, ordered by their current known distance from the source node. Because the algorithm has a global view of the graph, it finds an optimal routing table for the source node.
 
 \subsubsection*{Distance Vector (legacy)}
 
@@ -210,7 +210,7 @@ The Distance Vector algorithm is a distributed algorithm where each node only kn
 
 The Distance Vector algorithm is run step by step. During one step, each node sends its current routing tables to all its neighbors. To simulate this sending process, we save a copy of all the routing tables at time $t$. Then this copy is given to each neighbor and used to build the new routing table at time $t+1$.
 
-The new table for $A$ at $t+1$ is built by creating a table with only one route: the route to $A$ with a distance of 0. It is then updated by the received tables from all neighbors. In our experiment, all tables are sent and received simultaneously. In a context where tables arrive irregularly, we would need to remove only the routes going through $B$ when receiving a table from $B$. We would also need to remove routes going through neighbors when we detect that we're not connected to them anymore.
+The new table for $A$ at $t+1$ is built by creating a table with only one route: the route to $A$ with a distance of 0. It is then updated by the received tables from all neighbors. In our experiment, all tables are sent and received simultaneously. This is why we can allow ourselves to drop all routes when doing one step of the algorithm. In a context where tables arrive irregularly, we would need to remove only the routes going through $B$ when receiving a table from $B$. We would also need to remove routes going through neighbors when we detect that we're not connected to them anymore.
 
 When receiving a table from a neighbor, a node uses it to update its own table. Let's call $A$ the receiving node and $B$ the sender. $A$ compares each route in the $B$ table (to which the distance from $A$ to $B$ has been added) with the routes it already knows and keep the shortest option.
 
@@ -220,7 +220,7 @@ This is the classical distance vector algorithm that suffers from counting to in
 
 \subsubsection*{Distance vector (enhanced)}
 
-In the distance vector algorithm legacy version, tables sent only contains a destination and a distance for each routes, leading to ``counting to infinity'' issues. As an ``enhanced'' (\texttt{DV-e}) version of the distance vector algorithm, we added a ``via'' field to each route in the routing table. This allows a certain node to ignore routes that go through itself. If $B$ thinks it can reach $C$ through $A$, $A$ necessarily knows better and doesn't need this information. Taking it into account runs the risk of propagating wrong information.
+In the distance vector algorithm legacy version, tables sent only contains a destination and a distance for each routes, leading to ``counting to infinity'' issues. For our ``enhanced'' (\texttt{DV-e}) version of the distance vector algorithm, we added a ``via'' field to each route in the routing table. This allows a certain node to ignore routes that go through itself. If $A$ receives a route that goes via itself, $A$ necessarily knows better and doesn't need this information. Taking it into account runs the risk of propagating wrong information. Our \texttt{DV-e} algorithm adds this simple check. However, routing tables do not store the complete route, only the next node in the route (the via), a route might still reach $A$ eventually, and $A$ has no way of knowing. That is why our algorithm is not perfect and should be examined to determine if it is worth using.
 
 \subsection{Application Interface}
 
@@ -352,11 +352,11 @@ However, our algorithm is not immune to ``count to infinity'' problems, we just 
     \end{minipage}
 \end{center}
 
-Looking further into this, we can find examples where \texttt{DV-e} is slower to converge than \texttt{DV-l}. The counter examples were found by going through random graphs. We decided to investigate deeper into the benefits of  \texttt{dv-e}. Figure \ref{fig:charles} shows one of these counter examples.
+Looking further into this, we can find examples where \texttt{DV-e} is slower to converge than \texttt{DV-l}. The counter examples were found by going through random graphs. Figure \ref{fig:charles} shows one of these counter examples. We decided to investigate deeper into the benefits of  \texttt{dv-e}. 
 
 \begin{table}[h!]
     \begin{center}
-        \caption{Average number of steps to converge for \texttt{DV-l} compared to \texttt{DV-e} depending on the number of nodes in the graph and the density p. (positive numbers mean \texttt{DV-l} take more steps than \texttt{DV-e}).}
+        \caption{Average number of steps to converge for \texttt{DV-l} compared to \texttt{DV-e} depending on the number of nodes in the graph and the density p. (positive numbers mean \texttt{DV-l} takes more steps than \texttt{DV-e}).}
         \label{tab:results1}
         \begin{tabular}{|c|c|c|c|}
             \hline
@@ -380,9 +380,9 @@ Looking further into this, we can find examples where \texttt{DV-e} is slower to
     \end{center}
 \end{table}
 
-We compared both algorithms on graphs randomly generated by two parameters: the number of nodes and the probability p of an edge between two nodes. For each of these graph we chose an edge that will be damaged (its weight will be set to 500). We compare the number of steps it takes for \texttt{DV-e} to converge compared to \texttt{DV-l}. According to the results show in Table \ref{tab:results1}, the density of the graph doesn't seem to affect the relative performance. On the contrary, the number of nodes has a massive influence. Our method is barely even better when the graphs get bigger, averaging 0.26 less steps for graphs with 16 nodes.
+We compared both algorithms on graphs randomly generated by two parameters: the number of nodes and the probability p of an edge between two nodes. For each of these graph we chose an edge that will be damaged (its weight will be set to 500). We compare the number of steps it takes for \texttt{DV-e} to converge compared to \texttt{DV-l}. According to the results shown in Table \ref{tab:results1}, the density of the graph doesn't seem to affect the relative performance. On the contrary, the number of nodes has a massive influence. Our method is barely even better when the graphs get bigger, averaging 0.26 less steps for graphs with 16 nodes.
 
-At this step, we can make the hypothesis that with bigger graphs, the risk of counting to infinity is lower, thus reducing the usefulness of \texttt{DV-e}. But we would like confirmation of that. That's why we decided to count the number of time count to infinity happens. In order to check if a count to infinity is happening, we measure the convergence time of \texttt{DV-l} on the same graph twice. The first time we increase the chose edge weight to 100, the second time we increase it to 150. If the algorithm takes longer in the second case, it is because it needs time to count the extra 50.
+At this step, we can make the hypothesis that with bigger graphs, the risk of counting to infinity is lower, thus reducing the usefulness of \texttt{DV-e}. But we would like confirmation of that. That's why we decided to count the number of time count to infinity happens. In order to check if a count to infinity is happening, we measure the convergence time of \texttt{DV-l} on the same graph twice. The first time we increase the chosen edge weight to 100, the second time we increase it to 150. If the algorithm takes longer in the second case, it is because it needs time to count the extra 50.
 
 \begin{table}[h!]
     \begin{center}
@@ -422,7 +422,7 @@ The project was developed successfully and smoothly, with both team members cont
 
 % - What, if anything, did you do beyond the standard project description (if you based your project on it)?
 
-Beyond the basic requirements, we were able to implement additional features that enhanced the user experience and provided more functionality to the application. The application provides an intuitive and interactive TUI, which enabled users to easily create and manipulate network topologies and visualize the changes in the routing tables after executing the algorithms. Additionally, we implemented our own variation of the distance vector algorithm and extensively analyzed it an compared it to the basic implementation.
+Beyond the basic requirements, we were able to implement additional features that enhanced the user experience and provided more functionality to the application. The application provides an intuitive and interactive TUI, which enabled users to easily create and manipulate network topologies and visualize the changes in the routing tables after executing the algorithms. Additionally, we implemented our own variation of the distance vector algorithm and extensively analyzed it and compared it to the basic implementation.
 
 % - What did you learn?
 
@@ -430,9 +430,13 @@ As an outcome of the project, we gained a deeper understanding of network routin
 
 % - What was hard?
 
-We did not encounter significant difficulties during the project. However, implementing the routing algorithms was an application challenging to debug, ensuring that the routing tables were updated correctly after each iteration. This problem was partially solved by the interface, which is more user-friendly than a lot of print statements. Additionally, designing the TUI required a lot of time tuning the different components, ensuring a visually pleasing and comfortable user experience.
+We did not encounter significant difficulties during the project. However, the routing algorithms were challenging to debug. There are a lot of variables to keep track of when ensuring the routing tables are updated correctly after each iteration. This problem was partially solved by the interface, which is more user-friendly than a lot of print statements. Additionally, designing the TUI required a lot of time tuning the different components, ensuring a visually pleasing and comfortable user experience.
 
 % - Recap results % TODO
+
+This report showed that while leveraging via information during the \texttt{DV} can avoid count to infinity issues, it is not a perfect solution. It explains why our \texttt{DV-e} is not used in networking as it is less simple for benefits that can be very small. The simpler solution is understandably favored. 
+
+As future work, we could experiment with different graph shapes to determine what network architectures recover more quickly from bad news. The code provides all the tools (including graph generation and appropriate metrics). We invite the reader to do it themself as our report is already too long.  
 
 \section*{Author Contributions}
 
